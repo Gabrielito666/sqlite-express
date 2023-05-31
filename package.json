@@ -1,0 +1,22 @@
+{
+  "name": "sqlite-express",
+  "version": "1.0.0",
+  "description": "functions for sqlite3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabrielito666/sqlite-express.git"
+  },
+  "author": "Gabrielito666",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gabrielito666/sqlite-express/issues"
+  },
+  "homepage": "https://github.com/Gabrielito666/sqlite-express#readme",
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  }
+}
