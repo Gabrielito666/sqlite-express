@@ -1,4 +1,4 @@
-#SQLite-Express
+# SQLite-Express
 SQLite-Express is a package designed to simplify working with SQLite3 in Node.js. It provides an object that encapsulates various methods for efficient interaction with SQLite databases.
 
 With SQLite-Express, you can perform common database operations such as creating tables, inserting data, querying data, updating records, and deleting data, all with a simplified and intuitive interface.
@@ -7,7 +7,7 @@ The package aims to streamline the process of working with SQLite3 in Node.js, a
 
 Whether you are building a small-scale application or a complex system, SQLite-Express can be a valuable tool in your Node.js project, providing an efficient and convenient way to work with SQLite databases.
 
-##createDB
+## createDB
 
 ## createDB
 
