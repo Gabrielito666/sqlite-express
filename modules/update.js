@@ -1,7 +1,13 @@
-module.exports = (db, tabla, objColDat, where)=>{
-    let columna = Object.keys(objColDat)[0];
-    let datoInsertar = objColDat[columna];
-    let referencia_columna = Object.keys(where)[0];
-    let referencia_dato = where[referencia_columna]
-    db.run(`UPDATE ${tabla} set ${columna} = (?) WHERE ${referencia_columna} = (?)`, [datoInsertar, referencia_dato]);
+module.exports = (db, table, objColDat, where) => {
+    let col = Object.keys(objColDat)[0];
+    let dataInsert = objColDat[col];
+    let colReference = Object.keys(where)[0];
+    let dataReference = where[colReference];
+    db.run(`UPDATE ${table} SET ${col} = ? WHERE ${colReference} = ?`, [dataInsert, dataReference], function(err) {
+        if (err) {
+            console.error(err.message);
+            return;
+        }
+        console.log(`Row updated successfully in table ${table}.`);
+    });
 };

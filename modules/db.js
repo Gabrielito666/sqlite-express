@@ -1,4 +1,8 @@
-const path = require('path')
+const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const directorio = path.resolve(__dirname);
-module.exports = route =>{return new sqlite3.Database(directorio+"/.."+route);}
+
+module.exports = route => {
+    const absoluteRoute = path.resolve(process.cwd(), route);
+    console.log(`The declared database is located at: ${absoluteRoute}`);
+    return new sqlite3.Database(absoluteRoute);
+}

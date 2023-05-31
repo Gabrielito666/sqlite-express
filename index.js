@@ -6,9 +6,10 @@ const updateDB = require('./modules/update');
 const deleteDB = require('./modules/delete');
 
 module.exports = {
-    create : { db : newDB, table : createTable },
-    insert : insertDB,
-    select : selectDB,
-    update : updateDB,
-    delete : deleteDB
-}
+    createDB: newDB,
+    createTable: createTable,
+    insert: insertDB,
+    select: selectDB,
+    update: updateDB,
+    delete: deleteDB
+};
