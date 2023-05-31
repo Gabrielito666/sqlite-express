@@ -7,7 +7,7 @@ The package aims to streamline the process of working with SQLite3 in Node.js, a
 
 Whether you are building a small-scale application or a complex system, SQLite-Express can be a valuable tool in your Node.js project, providing an efficient and convenient way to work with SQLite databases.
 
-## Install
+## install
 
 To install `sqlite-express` and use it in your Node.js project, follow these steps:
 
@@ -18,7 +18,7 @@ To install `sqlite-express` and use it in your Node.js project, follow these ste
 3. Run the following command to install the package from npm:
 
 ```
-npm i sqlite-express
+npm install sqlite-express
 ```
 
 This will download the package from the npm registry and install it locally in your project.
