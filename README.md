@@ -30,18 +30,6 @@ const sqliteExpress = require('sqlite-express');
 ```
 
 ## createDB
-
-The `createDB` method is used to create a new SQLite database or connect to an existing database by specifying the file path.
-
-### Usage
-
-To create or connect to a database, use the following syntax:
-
-```javascript
-const data = sqliteExpress.createDB("./data.db");
-```
-
-## createDB
 The `createDB` method is used to create a new SQLite database or connect to an existing database by specifying the file path.
 
 ### Usage
