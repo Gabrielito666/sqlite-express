@@ -27,6 +27,6 @@ module.exports = (db, table, data) => {
     }
     function esBooleano(parametro) {
         return typeof parametro === 'boolean';
-      }
+    }
       
 };
