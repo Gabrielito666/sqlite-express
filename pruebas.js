@@ -2,7 +2,14 @@ sqliteExpress = require('./index');
 
 const db = sqliteExpress.createDB('data.db');
 
-sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
+//sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
 
-sqliteExpress.update(db, 'personas', {nombre : 'erica', edad : 58, ciudad : 'vilcun'}, {nombre : 'Antonia'})
+//sqliteExpress.delete(db, 'personas', {nombre : 'x'});sqliteExpress.delete(db, 'personas', {nombre : 'y'})
 
+
+//for(i=0;i<10;i++){sqliteExpress.insert(db, 'personas', {nombre : 'x', edad : i, ciudad : []});sqliteExpress.insert(db, 'personas', {nombre : 'y', edad : i, ciudad : []})}
+
+
+sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'santiago']}}, {edad : 5, nombre : 'y', AND : {ciudad : []}}, 'OR');
+
+//PARECE QUE HACE FALTA UN MONTón

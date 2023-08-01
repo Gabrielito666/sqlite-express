@@ -28,6 +28,7 @@ module.exports = async (db, table, col, where) => {
   });
   function procecedRows(rows){
     let oneRow, oneColumn;
+    if(rows.length === 0){return undefined};
     if(rows.length === 1){oneRow = true}else{oneRow = false};
     if(Object.keys(rows[0]).length === 1){oneColumn = true}else{oneColumn = false};
 

@@ -1,6 +1,6 @@
 const select = require('./select');
-module.exports = async(db, table, update, where) => {
-
+module.exports = async(db, table, update, where, conect) => {
+    console.log(update, where)
 
     let placeHolders = [];
     let upCols = Object.keys(update);
@@ -21,15 +21,11 @@ module.exports = async(db, table, update, where) => {
         placeHolders.push(dataInsert);
     }
 
-    let whereCols = Object.keys(where);
-    let whereArray =[];
-    
-    whereCols.forEach(whereCol => {
-        whereArray.push(`${whereCol} = ?`);
-        placeHolders.push(where[whereCol]);
-    });
+    conect = conect === undefined ? 'AND' : conect;
+    placeHolders = [...placeHolders, ...plaseHoldersOrdenados(where)];    
 
-    db.run(`UPDATE ${table} SET ${upArray.join()} WHERE ${whereArray.join(' AND ')}`, placeHolders, function(err) {
+    console.log(`UPDATE ${table} SET ${upArray.join()} WHERE ${armarWhere(where, conect)}`)
+    db.run(`UPDATE ${table} SET ${upArray.join(', ')} WHERE ${armarWhere(where, conect)}`, placeHolders, function(err) {
         if (err) {
             console.error(err.message);
             return;
@@ -39,4 +35,20 @@ module.exports = async(db, table, update, where) => {
     function esFuncion(parametro) {return typeof parametro === 'function';};
     function esObjeto(parametro) {return typeof parametro === 'object' && parametro !== null;};
     function esBooleano(parametro) {return typeof parametro === 'boolean';};
+
+    function armarWhere(condicion, conect){
+        let cols = Object.keys(condicion);
+        let condArray =[];
+        cols.forEach(col=>{
+            if(esObjeto(condicion[col])){condArray.push(armarWhere(condicion[col], col))}
+            else{condArray.push(`${col} = ?`);} 
+        }); return `(${condArray.join(` ${conect} `)})`
+    }
+    function plaseHoldersOrdenados(obj) {
+        let valores = [];
+        for (let clave in obj) {
+            if (esObjeto(obj[clave])) {valores =  valores.concat(plaseHoldersOrdenados(obj[clave]));} 
+            else {valores.push(obj[clave]);}
+        }; return valores;
+    }
 };
