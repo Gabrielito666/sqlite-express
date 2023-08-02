@@ -1,15 +1,12 @@
-const signs = require('./signos');
+const signs = require('./submodules/signos');
+const is = require('./submodules/is');
 module.exports = (db, table, data) => {
     return new Promise((resolve, reject) => {
         let cols = Object.keys(data);
         let values = Object.values(data);
         values.forEach((value, index) => {
-            if (esObjeto(value)) {
-                values[index] = JSON.stringify(value);
-            }
-            if (esBooleano(value)) {
-                values[index] = value.toString();
-            }
+            if (is.o(value)) {values[index] = JSON.stringify(value);}
+            if (is.b(value)) {values[index] = value.toString();}
         });
 
         db.run(`INSERT INTO ${table}(${cols.join(', ')}) VALUES(${signs(values.length)})`, values, function(err) {
@@ -21,12 +18,4 @@ module.exports = (db, table, data) => {
             }
         });
     });
-
-    function esObjeto(parametro) {
-        return typeof parametro === 'object' && parametro !== null;
-    }
-    function esBooleano(parametro) {
-        return typeof parametro === 'boolean';
-    }
-      
 };
