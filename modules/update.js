@@ -21,8 +21,7 @@ module.exports = async(db, table, update, where, conect) => {
     }
     conect = conect === undefined ? 'AND' : conect;
     placeHolders = [...placeHolders, ...whereConstructor.placeHolders(where)];    
-
-    db.run(`UPDATE ${table} SET ${upArray.join()} ${whereConstructor.query(where)}`, placeHolders, function(err) {
+    db.run(`UPDATE ${table} SET ${upArray.join()} ${whereConstructor.query(where, conect)}`, placeHolders, function(err) {
         if (err) {
             console.error(err.message);
             return;

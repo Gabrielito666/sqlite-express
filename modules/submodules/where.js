@@ -1,6 +1,6 @@
 const is = require('./is');
 module.exports = {
-	query : (where)=>{
+	query : (where, conector)=>{
 		function armarCondicion(obj, conector, arrayCondiciones){
 			let condicion;
 			cols =Object.keys(obj)
@@ -12,7 +12,7 @@ module.exports = {
 			});
 			return `(${arrayCondiciones.join(` ${conector} `)})`;
 		}
-		return `WHERE ${armarCondicion(where, 'AND', [])}`;
+		return `WHERE ${armarCondicion(where, conector, [])}`;
 	},
 	placeHolders : (where)=>{
 		function plaseHoldersOrdenados(obj) {

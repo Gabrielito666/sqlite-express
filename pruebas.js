@@ -3,7 +3,7 @@ const whereConstructor = require('./modules/submodules/where')
 
 const db = sqliteExpress.createDB('data.db');
 
-//sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
+sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
 
 //sqliteExpress.delete(db, 'personas', {nombre : 'x'});sqliteExpress.delete(db, 'personas', {nombre : 'y'})
 
@@ -16,15 +16,4 @@ const db = sqliteExpress.createDB('data.db');
 //PARECE QUE HACE FALTA UN MONTón
 
 
-const where = 
-{
-	a : ['b1', 'b2', 'b3'],
-	c : 'd',
-		OR : {
-			e : 'f',
-			g : ['h1', 'h2', 'h3', 'h4']
-		} ,
-	i : 'j'
-}
-
-sqliteExpress.update(db, 'personas', {x : 'b'}, where)
+sqliteExpress.update(db, 'personas', {ciudad : 'holis'}, {edad : 5})
