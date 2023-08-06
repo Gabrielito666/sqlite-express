@@ -1,19 +1,16 @@
 sqliteExpress = require('./index');
-const whereConstructor = require('./modules/submodules/where')
-
 const db = sqliteExpress.createDB('data.db');
 
 sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
 
-//sqliteExpress.delete(db, 'personas', {nombre : 'x'});sqliteExpress.delete(db, 'personas', {nombre : 'y'})
+/*
+sqliteExpress.insert(db, 'personas', {nombre : 'Gabriel', ciudad : ['vilcún', 'santaigo'], edad : 30});
+sqliteExpress.insert(db, 'personas', {nombre : 'Anto', ciudad : ['santaigo'], edad : 26});
+sqliteExpress.insert(db, 'personas', {nombre : 'Alonso', ciudad : ['vilcún'], edad : 20});
+sqliteExpress.insert(db, 'personas', {nombre : 'Erica', ciudad : ['vilcún', 'santaigo'], edad : 56});
+sqliteExpress.insert(db, 'personas', {nombre : 'Rodrigo', ciudad : ['vilcún', 'santaigo'], edad : 55});
+sqliteExpress.insert(db, 'personas', {nombre : 'Paola', ciudad : ['vilcún', 'santaigo', 'aysen'], edad : 55});
+sqliteExpress.insert(db, 'personas', {nombre : 'Astrid', ciudad : ['melburn', 'aysen'], edad : 40});
+*/
 
-
-//for(i=0;i<10;i++){sqliteExpress.insert(db, 'personas', {nombre : 'x', edad : i, ciudad : []});sqliteExpress.insert(db, 'personas', {nombre : 'y', edad : i, ciudad : []})}
-
-
-//sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'santiago']}}, {edad : 5, nombre : 'y', AND : {ciudad : []}}, 'OR');
-
-//PARECE QUE HACE FALTA UN MONTón
-
-
-sqliteExpress.update(db, 'personas', {ciudad : 'holis'}, {edad : 5})
+sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'londres']}, edad : (x)=>{return (x + 100)}}, {nombre : 'Gabriel', OR : {edad : 30, ciudad : 'hola'}});

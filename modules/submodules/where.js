@@ -1,18 +1,19 @@
 const is = require('./is');
 module.exports = {
-	query : (where, conector)=>{
-		function armarCondicion(obj, conector, arrayCondiciones){
+	query : (where, conect)=>{
+		conect = conect === undefined ? 'AND' : conect;
+		function armarCondicion(obj, conect, arrayCondiciones){
 			let condicion;
 			cols =Object.keys(obj)
 			cols.forEach(col=>{
 				if(is.o(obj[col]) && !is.a(obj[col])){condicion = armarCondicion(obj[col], col, [])}
-				else if(is.a(obj[col])){condicion = obj[col].map(x=>`${col} = ?`).join(` ${conector} `)}
+				else if(is.a(obj[col])){condicion = obj[col].map(x=>`${col} = ?`).join(` ${conect} `)}
 				else{condicion  =  `${col} = ?`}
 				arrayCondiciones.push(condicion);
 			});
-			return `(${arrayCondiciones.join(` ${conector} `)})`;
+			return `(${arrayCondiciones.join(` ${conect} `)})`;
 		}
-		return `WHERE ${armarCondicion(where, conector, [])}`;
+		return `WHERE ${armarCondicion(where, conect, [])}`;
 	},
 	placeHolders : (where)=>{
 		function plaseHoldersOrdenados(obj) {
