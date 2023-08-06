@@ -1,3 +1,4 @@
+const is = require('./is');
 module.exports = (rows)=>{
     let oneRow = rows.length === 1
     let oneColumn = Object.keys(rows[0]).length === 1;
