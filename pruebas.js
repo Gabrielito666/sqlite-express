@@ -13,4 +13,9 @@ sqliteExpress.insert(db, 'personas', {nombre : 'Paola', ciudad : ['vilcún', 'sa
 sqliteExpress.insert(db, 'personas', {nombre : 'Astrid', ciudad : ['melburn', 'aysen'], edad : 40});
 */
 
-sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'londres']}, edad : (x)=>{return (x + 100)}}, {nombre : 'Gabriel', OR : {edad : 30, ciudad : 'hola'}});
+//sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'londres']}, edad : (x)=>{return (x + 100)}}, {nombre : 'Gabriel', OR : {edad : 30, ciudad : 'hola'}});
+
+let hola = async()=>{
+    console.log(await sqliteExpress.select(db, 'personas', '*'))
+}
+hola()

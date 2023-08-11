@@ -13,7 +13,11 @@ module.exports = {
 			});
 			return `(${arrayCondiciones.join(` ${conect} `)})`;
 		}
-		return `WHERE ${armarCondicion(where, conect, [])}`;
+		if(where === undefined || where === null){
+			return '';
+		}else{
+			return `WHERE ${armarCondicion(where, conect, [])}`;
+		}
 	},
 	placeHolders : (where)=>{
 		function plaseHoldersOrdenados(obj) {
@@ -23,6 +27,10 @@ module.exports = {
 				else {valores.push(obj[clave]);}
 			}; return valores;
 		}
-		return plaseHoldersOrdenados(where); 
+		if(where === undefined || where === null){
+			return [];
+		}else{
+			return plaseHoldersOrdenados(where); 
+		}
 	}
 }
