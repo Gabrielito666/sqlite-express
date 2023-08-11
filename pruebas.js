@@ -1,7 +1,8 @@
 sqliteExpress = require('./index');
 const db = sqliteExpress.createDB('data.db');
+const ndb = sqliteExpress.createDB('noticias.db');
 
-sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
+//sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
 
 /*
 sqliteExpress.insert(db, 'personas', {nombre : 'Gabriel', ciudad : ['vilcún', 'santaigo'], edad : 30});
@@ -16,6 +17,6 @@ sqliteExpress.insert(db, 'personas', {nombre : 'Astrid', ciudad : ['melburn', 'a
 //sqliteExpress.update(db, 'personas', {ciudad : (x)=>{return [...x, 'londres']}, edad : (x)=>{return (x + 100)}}, {nombre : 'Gabriel', OR : {edad : 30, ciudad : 'hola'}});
 
 let hola = async()=>{
-    console.log(await sqliteExpress.select(db, 'personas', '*'))
+    console.log(await sqliteExpress.select(ndb, 'noticias', '*', {nombre : 'pruebaMus'}))
 }
 hola()
