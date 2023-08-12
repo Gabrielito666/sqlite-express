@@ -18,7 +18,7 @@ module.exports = async(db, table, update, where, conect) => {
             arrCase.push('CASE');
             let arrDataInsert = [];
             originalData.forEach(row=>{
-                arrCase.push(`WHEN ROWID = ${row.rowid} THEN ?`);
+                arrCase.push(`WHEN ROWID = ${Object.keys(row)[0]} THEN ?`);
                 arrDataInsert.push(strngifyData(dataInsert(parseData(row[upCol]))));
             })
             arrCase.push(`ELSE ${upCol} END`);
@@ -29,8 +29,8 @@ module.exports = async(db, table, update, where, conect) => {
         placeHolders = [...placeHolders, ...dataInsert];
     }
     placeHolders = [...placeHolders, ...whereConstructor.placeHolders(where)];
-        console.log(`UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conect)}`)
-        console.log(placeHolders);
+        //console.log(`UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conect)}`)
+        //console.log(placeHolders);
     db.run(`UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conect)}`, placeHolders, function(err) {
         if (err) {
             console.error(err.message);
