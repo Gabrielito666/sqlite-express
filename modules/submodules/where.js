@@ -9,8 +9,12 @@ module.exports = {
 			cols.forEach(col=>{
 				operator = '=';
 				if(is.o(obj[col]) && !is.a(obj[col])){
-					operator = (obj[col].operator && obj[col].value) ? obj[col].operator : '=';
-					condicion = armarCondicion(obj[col], col, []);
+					if(obj[col].operator && obj[col].value){
+						operator =  obj[col].operator;
+						condicion  =  `${col} ${operator} ?`
+					}else{
+						condicion = armarCondicion(obj[col], col, []);
+					}
 				}
 				else if(is.a(obj[col])){condicion = obj[col].map(x=>{
 					if(is.o(x) && !is.a(x)){

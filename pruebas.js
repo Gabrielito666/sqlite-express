@@ -18,8 +18,45 @@ sqliteExpress.insert(db, 'personas', {nombre : 'Astrid', ciudad : ['melburn', 'a
 
 //sqliteExpress.update(ndb, 'noticias', {publicada : (x)=>{return !x}}, {nombre : 'pruebaMus'});
 
+const query =
+{
+    db : db,
+    table : 'personas',
+    columns : '*',
+    where : 
+    {
+        edad :
+        [
+            {
+                operator : '>',
+                value : 100
+            },
+            {
+                operator : '<=',
+                value : 34
+            }
+        ]
+    },
+    conector : 'OR'
+}
+
+
+
 hola = async()=>{
     console.log(await sqliteExpress.select(db, 'personas', '*', {edad : [{operator : '>', value : 100}, {operator : '<=', value : 34}]}, 'OR'));
+    console.log(await sqliteExpress.select(query))
 }
+
+
 hola()
+
+const objUp = {
+    db : db,
+    table : 'personas',
+    update : {nombre : 'gabriel'},
+    where : [{nombre : 'miguel'}, {edad : {operator : '<=', value : '40'}}],
+    conector : 'OR'
+}
+
+sqliteExpress.update(objUp);
 

@@ -6,4 +6,5 @@ module.exports = {
     n : (x)=>{return typeof x === 'number'},
     j : (x)=>{if(typeof x !== 'string'){return false}try{JSON.parse(x)}catch(err){return false}return true},
     f : (x)=>{return typeof x === 'function'},
+    db : (x)=>{return x.constructor.name === 'Database'}
 }

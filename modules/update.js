@@ -1,7 +1,15 @@
 const select = require('./select');
 const whereConstructor = require('./submodules/where');
 const is = require('./submodules/is');
-module.exports = async(db, table, update, where, conect) => {
+const consoleQuery = require('./submodules/consoleQuery');
+module.exports = async(arg1, table, update, where, conector) => {
+
+    let db;
+    if(is.db(arg1)){
+      db = arg1;
+    }else{
+      ({db, table, update, where, conector} = arg1);
+    }
 
     let placeHolders = [];
     let upCols = Object.keys(update);
@@ -13,7 +21,7 @@ module.exports = async(db, table, update, where, conect) => {
         let isAFunction = false;
         if(is.f(dataInsert)){
             isAFunction = true;
-            let originalData = await select(db, table, `ROWID, ${upCol}`, where, conect);
+            let originalData = await select(db, table, `ROWID, ${upCol}`, where, conector);
             console.log(originalData)
             arrCase.push('CASE');
             let arrDataInsert = [];
@@ -29,9 +37,9 @@ module.exports = async(db, table, update, where, conect) => {
         placeHolders = [...placeHolders, ...dataInsert];
     }
     placeHolders = [...placeHolders, ...whereConstructor.placeHolders(where)];
-        //console.log(`UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conect)}`)
-        //console.log(placeHolders);
-    db.run(`UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conect)}`, placeHolders, function(err) {
+    let finalQuery = `UPDATE ${table} SET ${upArray.join(', ')} ${whereConstructor.query(where, conector)}`;
+    consoleQuery(finalQuery, placeHolders);
+    db.run(finalQuery, placeHolders, function(err) {
         if (err) {
             console.error(err.message);
             return;
