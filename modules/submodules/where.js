@@ -4,11 +4,21 @@ module.exports = {
 		conect = conect === undefined ? 'AND' : conect;
 		function armarCondicion(obj, conect, arrayCondiciones){
 			let condicion;
+			let operator;
 			cols =Object.keys(obj)
 			cols.forEach(col=>{
-				if(is.o(obj[col]) && !is.a(obj[col])){condicion = armarCondicion(obj[col], col, [])}
-				else if(is.a(obj[col])){condicion = obj[col].map(x=>`${col} = ?`).join(` ${conect} `)}
-				else{condicion  =  `${col} = ?`}
+				operator = '=';
+				if(is.o(obj[col]) && !is.a(obj[col])){
+					operator = (obj[col].operator && obj[col].value) ? obj[col].operator : '=';
+					condicion = armarCondicion(obj[col], col, []);
+				}
+				else if(is.a(obj[col])){condicion = obj[col].map(x=>{
+					if(is.o(x) && !is.a(x)){
+						operator = (x.operator && x.value) ? x.operator : '=';
+					}
+					return `${col} ${operator} ?`}).join(` ${conect} `)
+				}
+				else{condicion  =  `${col} ${operator} ?`}
 				arrayCondiciones.push(condicion);
 			});
 			return `(${arrayCondiciones.join(` ${conect} `)})`;
@@ -23,7 +33,12 @@ module.exports = {
 		function plaseHoldersOrdenados(obj) {
 			let valores = [];
 			for (let clave in obj) {
-				if (is.o(obj[clave])) {valores = valores.concat(plaseHoldersOrdenados(obj[clave]));} 
+				if (is.o(obj[clave])){
+					if(obj[clave].operator && obj[clave].value){
+						valores.push(obj[clave].value)
+					}else{
+						valores = valores.concat(plaseHoldersOrdenados(obj[clave]));} 
+					}
 				else {valores.push(obj[clave]);}
 			}; return valores;
 		}
