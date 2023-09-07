@@ -29,6 +29,9 @@ This will download the package from the npm registry and install it locally in y
 const sqliteExpress = require('sqlite-express');
 ```
 
+# Methods
+All of the following methods can receive parameters in order or an object.
+
 ## createDB
 The `createDB` method is used to create a new SQLite database or connect to an existing database by specifying the file path.
 
@@ -54,6 +57,17 @@ To create a table in the database, use the following syntax:
 sqliteExpress.createTable(data, "the_table", {name: "text", age: "integer", city: "text"});
 
 ```
+or
+```javascript
+const objectToCreateTable = {
+    db : data,
+    name : "the_table",
+    columns : {name: "text", age: "integer", city: "text"}
+}
+sqliteExpress.createTable(objectToCreateTable);
+
+```
+
 In the example above, createTable is called with the database object data, the table name "la_tabla", and an object representing the column names and their data types. The column names and data types are defined within the object as key-value pairs. In this case, the table will have three columns: nombre of type text, edad of type integer, and ciudad of type text.
 
 ## insert
@@ -67,7 +81,104 @@ To insert data into a table in the database, use the following syntax:
 ```javascript
 sqliteExpress.insert(data, "the_table", {name: "Jhon", age: 27, city: "New York"});
 ```
+or
+```javascript
+const rowToInsert = {
+    db : data,
+    table : "the_teble",
+    row : {name: "Jhon", age: 27, city: "New York"}
+}
+sqliteExpress.insert(rowToInsert);
+```
 In the example above, insert is called with the database object data, the table name "the_table", and an object representing the column names and their corresponding values. The object consists of key-value pairs, where the keys represent the column names and the values represent the data to be inserted into those columns. In this case, the name column will have the value "Jhon", the age column will have the value 27, and the city column will have the value "New York".
+
+This method includes the possibility of saving automatically srtingify objects and arrays in a column of type text:
+```javascript
+const rowToInsert = {
+    db : data,
+    table : "the_teble",
+    row : {
+        name: "Jhon",
+        age: 27,
+        city: ["New York", "Paris"]
+    }
+}
+sqliteExpress.insert(rowToInsert);
+```
+you should not stop the booleans to text either. The program understands that you want to convert them to text and saves them without any problems.
+
+## where constructor
+
+The last 3 methods (update, delete and select) have among their possible parameters the where.
+
+the basic use of the where constructor is the one already shown but it offers many more options.
+```javascript
+const where = {age : 27} //WHERE age = 27
+```
+By default it assumes that the comparison operator you want to use is "=". But if you need another type of operator you can use the following format:
+
+```javascript
+const where = {
+    age : {
+        operator : ">",
+        value : 27
+    }
+    } //WHERE age > 27
+```
+
+In addition, several conditions can be added:
+
+```javascript
+const where = {
+    age : {
+        operator : ">",
+        value : 27
+    },
+    name : "Alex"
+    } //WHERE age > 27 AND name = Alex
+```
+
+When there is more than one condition the program assumes that the connector is "AND", if you want to use another one you have 2 options. The connector property represents the lowest connector of the logic:
+
+```javascript
+const conector = "OR"
+const where = {
+    age : {
+        operator : ">",
+        value : 27
+    },
+    name : "Alex"
+    } //WHERE age > 27 OR name = Alex
+```
+All 3 methods accept this parameter, but you can also structure series of conditions from within where, so you can create more complex conditions. If you want to create a block of conditions whose connector is "OR" you must create an OR property and the same with AND:
+
+```javascript
+const where = {
+    age : {
+        operator : ">",
+        value : 27
+    },
+    OR:{
+        name : "Alex",
+        city : "New York"
+    }
+} //WHERE age > 27 AND (name = Alex OR city = New York)
+```
+Ademas puedes asignar un array a los valores de las codiciones
+
+```javascript
+const where = {
+    age : {
+        operator : ">",
+        value : 27
+    },
+    OR:{
+        name : ["Alex", "John", "Paul"],
+        city : "New York"
+    }
+} //WHERE age > 27 AND (name = Alex OR name = John OR name = Paul OR city = New York)
+```
+In this way we can create much more complex selectors.
 
 ## update
 
@@ -78,10 +189,48 @@ The `update` method is used to update records in a specific table in an SQLite d
 To update records in a table based on a specific condition, use the following syntax:
 
 ```javascript
-sqliteExpress.update(data, "the_table", {name: "Alex"}, {age: 27});
+sqliteExpress.update(data, "the_table", {name: "Alex"}, {age: 27}, "OR");
+```
+or
+```javascript
+const instructionsToUpdate = {
+    db : data,
+    table : "the_table",
+    update : {name: "Alex"},
+    where : {age: 27},
+    conector : "OR"
+}
+sqliteExpress.update(instructionsToUpdate);
 ```
 
 In the example above, update is called with the database object data, the table name "the_table", an object representing the column and the new data {name: "Alex"}, and an object representing the condition {age: 27}. This means that the name column will be updated to "Alex" if the age column matches the value 27. For example, if there is a record with the name "Jhon" and the age 27, it will be updated to "Alex".
+
+An interesting feature that this method has, is that some value of some update column can pass a funct
+
+```javascript
+const instructionsToUpdate = {
+    db : data,
+    table : "the_table",
+    update : {age: (x)=>{return (x + 1)}},
+    where : {name: "Alex"},
+    conector : "OR"
+}
+sqliteExpress.update(instructionsToUpdate);
+```
+in this case it will select all the rows whose column "name" contains "Alex", it will take the current value of that cell and add 1. And it also works with arrays or objects. You can create functions that add an item to the array and return it for example.
+
+```javascript
+const instructionsToUpdate = {
+    //imagine that there is only one "Alex" and his city columa contains ["New York, "Paris"]
+    db : data,
+    table : "the_table",
+    update : {city: (x)=>{return [...x, "Londres"]}},
+    where : {name: "Alex"},
+    conector : "OR"
+    //now your columa city will be ["New York, "Paris", "Londres"]
+}
+sqliteExpress.update(instructionsToUpdate);
+```
 
 ## delete
 
@@ -92,6 +241,15 @@ The `delete` method is used to delete records from a specific table in an SQLite
 To delete rows from a table based on a specific condition, use the following syntax:
 
 ```javascript
+sqliteExpress.delete(data, "the_table", {age: 27});
+```
+or
+```javascript
+const rowToDelete = {
+    db : data,
+    table : "the_table",
+    where : {age: 27}
+}
 sqliteExpress.delete(data, "the_table", {age: 27});
 ```
 
@@ -112,19 +270,25 @@ async function theData() {
 
 theData();
 ```
-
-In the example above, select is called with the database object data, the table name "the_table", the column name "city", and an object representing the condition {name: "Alex"}. This means that the method will retrieve the values from the "city" column where the name column matches "Alex". The selected data is returned as a Promise, and in this example, it is logged to the console.
-
-If you need to select data based on multiple values for a column, you can pass an array of values in the condition object. Here's an example:
-
+or
 ```javascript
+const objectToQuery = {
+    db : data,
+    table : "the_table",
+    columns : "city",
+    where : {name: "Alex"}
+}
 async function theData() {
-    console.log(await sqliteExpress.select(data, "the_table", "city", {name: ["Alex", "John"]}));
+    console.log(await sqliteExpress.select(data, "the_table", "city", {name: "Alex"}));
 }
 
 theData();
 ```
-In this example, the method will retrieve the values from the "city" column where the name column matches either "Alex" or "John".
+
+In the example above, select is called with the database object data, the table name "the_table", the column name "city", and an object representing the condition {name: "Alex"}. This means that the method will retrieve the values from the "city" column where the name column matches "Alex". The selected data is returned as a Promise, and in this example, it is logged to the console.
+
+The program detects if what there is inside is a stringified object and it stops it automatically, the same with the booleans. Also the program detects if you are receiving only one value and it gives it directly to you so that we do not find ourselves with the typical situation that we have to enter in an array with an object of a single property. In the same way if we receive a single row this method will return an object with the columns and their values without the array.
+
 
 ### Return Value
 

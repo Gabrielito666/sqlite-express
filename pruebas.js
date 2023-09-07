@@ -2,7 +2,9 @@ sqliteExpress = require('./index');
 const db = sqliteExpress.createDB('data.db');
 const ndb = sqliteExpress.createDB('noticias.db');
 
-//sqliteExpress.createTable(db, 'personas', {nombre : 'text', ciudad : 'text', edad : 'integer'});
+
+
+sqliteExpress.createTable(db, 'personas2', {nombre : 'text', ciudad : 'text', edad : 'integer'});
 
 /*
 sqliteExpress.insert(db, 'personas', {nombre : 'Gabriel', ciudad : ['vilcún', 'santaigo'], edad : 30});

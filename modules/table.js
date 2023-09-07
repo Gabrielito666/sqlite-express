@@ -1,3 +1,4 @@
+const is = require('./submodules/is')
 module.exports = (arg1, name, columns) => {
   let db;
   if(is.db(arg1)){
