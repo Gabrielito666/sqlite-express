@@ -279,7 +279,7 @@ const objectToQuery = {
     where : {name: "Alex"}
 }
 async function theData() {
-    console.log(await sqliteExpress.select(data, "the_table", "city", {name: "Alex"}));
+    console.log(await sqliteExpress.select(objectToQuery));
 }
 
 theData();

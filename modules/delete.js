@@ -1,4 +1,5 @@
 const consoleQuery = require('./submodules/consoleQuery');
+const is = require('./submodules/is')
 module.exports = (arg1, table, where) => {
     let db;
     if(is.db(arg1)){
