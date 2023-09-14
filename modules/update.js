@@ -22,11 +22,10 @@ module.exports = async(arg1, table, update, where, conector) => {
         if(is.f(dataInsert)){
             isAFunction = true;
             let originalData = await select(db, table, `ROWID, ${upCol}`, where, conector);
-            console.log(originalData)
             arrCase.push('CASE');
             let arrDataInsert = [];
             originalData.forEach(row=>{
-                arrCase.push(`WHEN ROWID = ${Object.keys(row)[0]} THEN ?`);
+                arrCase.push(`WHEN ROWID = ${row[Object.keys(row)[0]]} THEN ?`);
                 arrDataInsert.push(strngifyData(dataInsert(parseData(row[upCol]))));
             })
             arrCase.push(`ELSE ${upCol} END`);

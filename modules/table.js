@@ -1,4 +1,5 @@
-const is = require('./submodules/is')
+const is = require('./submodules/is');
+const consoleQuery = require('./submodules/consoleQuery');
 module.exports = (arg1, name, columns) => {
   let db;
   if(is.db(arg1)){
@@ -9,9 +10,9 @@ module.exports = (arg1, name, columns) => {
 
   let array = Object.entries(columns);
   let partCols = array.map(col => `${col[0]} ${col[1]}`);
-  let string = partCols.join(',');
+  let string = partCols.join(', ');
   let finalQuery = `CREATE TABLE IF NOT EXISTS ${name} (${string})`;
-  console.log(`the query generated is: ${finalQuery}`);
+  consoleQuery(finalQuery);
   db.run(finalQuery, function(err) {
     if (err) {
       console.error(err.message);
