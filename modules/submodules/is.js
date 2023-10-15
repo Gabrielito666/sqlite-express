@@ -1,10 +1,9 @@
 module.exports = {
-    o : (x)=>{return typeof x === 'object' && x !== null},
-    a : (x)=>{return Array.isArray(x)},
-    b : (x)=>{return typeof x === 'boolean'},
-    s : (x)=>{return typeof x === 'string'},
-    n : (x)=>{return typeof x === 'number'},
-    j : (x)=>{if(typeof x !== 'string'){return false}try{JSON.parse(x)}catch(err){return false}return true},
-    f : (x)=>{return typeof x === 'function'},
-    db : (x)=>{return x.constructor.name === 'Database'}
+    o : ( x )=>  ( typeof x === 'object' && x !== null ),
+    a : ( x )=> Array.isArray(x),
+    b : ( x )=> typeof x === 'boolean',
+    s : ( x )=> typeof x === 'string',
+    n : ( x )=> typeof x === 'number',
+    j : ( x )=>{ if( typeof x !== 'string' ){ return false }try{ JSON.parse( x ) }catch( err ){ return false }return true },
+    f : ( x )=> typeof x === 'function'
 }

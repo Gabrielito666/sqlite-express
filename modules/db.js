@@ -1,8 +1,16 @@
-const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const path = require( 'path' );
+const sqlite3 = require( 'sqlite3' ).verbose();
+const { DB } = require( './classes' );
 
-module.exports = route => {
-    const absoluteRoute = path.resolve(process.cwd(), route);
-    console.log(`The declared database is located at: ${absoluteRoute}`);
-    return new sqlite3.Database(absoluteRoute);
+//the default value for key is a hexagecimal string in case of not explcit a key
+
+module.exports = ( { route, key = crypto.randomBytes(32).toString('hex'), logQuery, context } ) => {
+
+    route = path.isAbsolute( route ) ? route : path.resolve( context._rootPath, route );
+    
+    if( logQuery ) console.log( `The declared database is located at: ${ route }` );
+    context._dataBasesList[ key ] = new DB( { db : new sqlite3.Database( route ), key : key } );
+    //if this is the first database to create. this are default database
+    if( Object.keys( context._dataBasesList ).length === 1 ) context._defaultOptions.db = key;
+    return key;
 }

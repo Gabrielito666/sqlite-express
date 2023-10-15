@@ -1,23 +1,18 @@
-const is = require('./submodules/is');
-const consoleQuery = require('./submodules/consoleQuery');
-module.exports = (arg1, name, columns) => {
-  let db;
-  if(is.db(arg1)){
-    db = arg1;
-  }else{
-    ({db, name, columns} = arg1);
-  }
+const consoleQuery = require( './submodules/consoleQuery' );
+module.exports = ( { db, table, columns, logQuery } ) => {
 
-  let array = Object.entries(columns);
-  let partCols = array.map(col => `${col[0]} ${col[1]}`);
-  let string = partCols.join(', ');
-  let finalQuery = `CREATE TABLE IF NOT EXISTS ${name} (${string})`;
-  consoleQuery(finalQuery);
-  db.run(finalQuery, function(err) {
-    if (err) {
-      console.error(err.message);
-      return;
-    }
-    console.log(`Checked table '${name}'. Created if it did not exist.`);
-  });
+  return new Promise( ( resolve, reject )=>{
+    let stringColumns = Object.entries( columns ).map( col => `${ col[ 0 ] } ${ col[ 1 ] }` ).join( ', ' );
+    let finalQuery = `CREATE TABLE IF NOT EXISTS ${ table } (${ stringColumns })`;
+    if( logQuery ) consoleQuery( finalQuery );
+    db.run( finalQuery, function( err ) {
+      if ( err ) {
+        console.error( err.message );
+        reject( err );
+        return;
+      }
+      if ( logQuery ) console.log( `Checked table '${ table }'. Created if it did not exist.` );
+      resolve()
+    } );
+  } );
 };

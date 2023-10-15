@@ -1,49 +1,139 @@
-# SQLite-Express
-SQLite-Express is a package designed to simplify working with SQLite3 in Node.js. It provides an object that encapsulates various methods for efficient interaction with SQLite databases.
+### SQLite-Express Version 3
 
-With SQLite-Express, you can perform common database operations such as creating tables, inserting data, querying data, updating records, and deleting data, all with a simplified and intuitive interface.
+The third version of SQLite-Express is much more convenient and powerful, as it has evolved from being a simple object with methods to a full-fledged class.
 
-The package aims to streamline the process of working with SQLite3 in Node.js, allowing you to focus on your application's logic rather than dealing with the intricacies of low-level database operations. By abstracting away the complexity, SQLite-Express enables you to accelerate development and improve productivity when working with SQLite databases.
+#### Installation
 
-Whether you are building a small-scale application or a complex system, SQLite-Express can be a valuable tool in your Node.js project, providing an efficient and convenient way to work with SQLite databases.
+To install, execute the following command in your terminal:
 
-## install
-
-To install `sqlite-express` and use it in your Node.js project, follow these steps:
-
-1. Open your terminal or command prompt.
-
-2. Navigate to your project directory where you want to install `sqlite-express`.
-
-3. Run the following command to install the package from npm:
-
-```
-npm install sqlite-express
+```bash
+npm i sqlite-express
 ```
 
-This will download the package from the npm registry and install it locally in your project.
+#### Initialization
 
-4. Once the installation is complete, you can require `sqlite-express` in your JavaScript files to start using it:
+To instantiate the package, start with these lines:
 
 ```javascript
-const sqliteExpress = require('sqlite-express');
+const SqliteExpress = require('./index');
+const session = new SqliteExpress();
 ```
+
+With this new instance, you can execute all the previous methods in the same way you used to.
+
+#### Key Features
+
+1. **Queue System:** The most substantial improvement is the integration of a queue to serialize operations. This avoids conflicts with the order of operations and prevents database overload. Thus, you're free to use loops.
+
+2. **Default Options Property:** Another added feature is the `defaultOptions` property. It eliminates the need to repeatedly pass the same arguments to methods. Now, all the properties you use in methods can be set in this object. Below is a list of these properties. If a value is already assigned (`=`), it's the default:
+
+```javascript
+rootPath = (path from where you instantiate the class)
+emptyResult = undefined
+route
+db
+key
+table
+where
+columns
+select = '*'
+connector = 'AND'
+update
+row
+processColumns = true
+processRows = true
+logQuery = true
+```
+
+You can modify these values individually or with the `set` method:
+
+```javascript
+session.defaultOptions.table = 'the_table';
+session.defaultOptions.db = 'dataBase1';
+// ... and so on
+
+session.defaultOptions.set({
+    table: 'the_table',
+    db: 'dataBase1',
+    route: './nuevaCarpeta/my_database.db',
+    logQuery: false
+});
+```
+
+width set method yo don't need put all default options. Just the ones you want.
 
 # Methods
 All of the following methods can receive parameters in order or an object.
 
+# Methods
+
+All of the following methods can either accept parameters in a specific order or receive an object as an argument.
+
 ## createDB
-The `createDB` method is used to create a new SQLite database or connect to an existing database by specifying the file path.
+
+The `createDB` method allows you to create a new SQLite database or connect to an existing one. You need to specify both a relative path (based on the path from which the class was instantiated) and a unique key that identifies the database.
 
 ### Usage
 
 To create or connect to a database, use the following syntax:
 
 ```javascript
-const data = sqliteExpress.createDB("./data.db");
+session.createDB({ route: './data.db', key: 'dataBase1' });
 ```
 
-In the example above, createDB is called with the file path "./data.db", which creates a new SQLite database file named "data.db" in the current directory. If a database file with the same name already exists at the specified path, createDB will establish a connection to that existing database.
+In the example above, `createDB` is invoked with a route of "./data.db", which refers to a new SQLite database file named "data.db" in the directory relative to where the class was instantiated. The key 'dataBase1' serves as a unique identifier for the database.
+
+If a database file with the same name already exists at the specified path, `createDB` will establish a connection to that existing database.
+
+It's important to note:
+- If the `route` is not provided, an error will be thrown.
+- If the `key` is not specified, a hexadecimal string will be generated and used as the default key.
+
+The method returns the key, allowing you to store it as demonstrated below:
+
+**Using an explicit key:**
+
+```javascript
+const db = session.createDB({ route: './data.db', key: 'dataBase1' });
+```
+
+**Using a generated hexadecimal key:**
+
+```javascript
+const db = session.createDB({ route: './data.db' });
+```
+
+It's important not to use the same key for different databases because this would cause an error.
+
+## Using Databases with Methods
+
+Every subsequent method requires specifying a database (`db`). If you are using only one database, it's advantageous to set it as the default.
+
+To reference a database in methods, you can either use the explicit `key` as a string or the return value from the `createDB` method.
+
+### Using the Key Explicitly
+
+First, create or connect to the database:
+
+```javascript
+session.createDB({ route: './data.db', key: 'dataBase1' });
+
+//Then, use the key to reference the database in other methods:
+session.createTable({ db: 'dataBase1' /* ... other parameters ... */ });
+```
+
+### Using the Return Value of `createDB`
+
+Create or connect to the database and store the return value:
+
+```javascript
+const db = session.createDB({ route: './data.db', key: 'dataBase1' });
+
+//Then, use this stored value in other methods:
+session.createTable({ db: db /* ... other parameters ... */ });
+```
+
+This approach mirrors the method employed in version 2 of this package. As observed, there's no need to save the return value of `createDB` to a variable if you're using an explicit key. However, if you do not provide an explicit key and rely on the generated hexadecimal key, you will need to store the return value for future references.
 
 ## createTable
 
@@ -54,17 +144,17 @@ The `createTable` method is used to create a new table in an SQLite database by 
 To create a table in the database, use the following syntax:
 
 ```javascript
-sqliteExpress.createTable(data, "the_table", {name: "text", age: "integer", city: "text"});
+session.createTable( 'dataBase1', "the_table", { name: "text", age: "integer", city: "text" } );
 
 ```
 or
 ```javascript
 const objectToCreateTable = {
-    db : data,
-    name : "the_table",
-    columns : {name: "text", age: "integer", city: "text"}
+    db : 'dataBase1',
+    table : "the_table",
+    columns : { name: "text", age: "integer", city: "text" }
 }
-sqliteExpress.createTable(objectToCreateTable);
+session.createTable( objectToCreateTable );
 
 ```
 
@@ -79,23 +169,23 @@ The `insert` method is used to insert data into a specific table in an SQLite da
 To insert data into a table in the database, use the following syntax:
 
 ```javascript
-sqliteExpress.insert(data, "the_table", {name: "Jhon", age: 27, city: "New York"});
+session.insert( 'dataBase1', "the_table", { name: "Jhon", age: 27, city: "New York" } );
 ```
 or
 ```javascript
 const rowToInsert = {
-    db : data,
+    db : 'dataBase1',
     table : "the_teble",
-    row : {name: "Jhon", age: 27, city: "New York"}
+    row : { name: "Jhon", age: 27, city: "New York" }
 }
-sqliteExpress.insert(rowToInsert);
+session.insert( rowToInsert );
 ```
 In the example above, insert is called with the database object data, the table name "the_table", and an object representing the column names and their corresponding values. The object consists of key-value pairs, where the keys represent the column names and the values represent the data to be inserted into those columns. In this case, the name column will have the value "Jhon", the age column will have the value 27, and the city column will have the value "New York".
 
 This method includes the possibility of saving automatically srtingify objects and arrays in a column of type text:
 ```javascript
 const rowToInsert = {
-    db : data,
+    db : 'dataBase1',
     table : "the_teble",
     row : {
         name: "Jhon",
@@ -103,7 +193,7 @@ const rowToInsert = {
         city: ["New York", "Paris"]
     }
 }
-sqliteExpress.insert(rowToInsert);
+session.insert( rowToInsert );
 ```
 you should not stop the booleans to text either. The program understands that you want to convert them to text and saves them without any problems.
 
@@ -113,7 +203,7 @@ The last 3 methods (update, delete and select) have among their possible paramet
 
 the basic use of the where constructor is the one already shown but it offers many more options.
 ```javascript
-const where = {age : 27} //WHERE age = 27
+const where = { age : 27 } //WHERE age = 27
 ```
 By default it assumes that the comparison operator you want to use is "=". But if you need another type of operator you can use the following format:
 
@@ -141,7 +231,7 @@ const where = {
 When there is more than one condition the program assumes that the connector is "AND", if you want to use another one you have 2 options. The connector property represents the lowest connector of the logic:
 
 ```javascript
-const conector = "OR"
+const connector = "OR"
 const where = {
     age : {
         operator : ">",
@@ -189,18 +279,18 @@ The `update` method is used to update records in a specific table in an SQLite d
 To update records in a table based on a specific condition, use the following syntax:
 
 ```javascript
-sqliteExpress.update(data, "the_table", {name: "Alex"}, {age: 27}, "OR");
+session.update('dataBase1', "the_table", {name: "Alex"}, {age: 27}, "OR");
 ```
 or
 ```javascript
 const instructionsToUpdate = {
-    db : data,
+    db : 'dataBase1',
     table : "the_table",
     update : {name: "Alex"},
     where : {age: 27},
-    conector : "OR"
+    connector : "OR"
 }
-sqliteExpress.update(instructionsToUpdate);
+session.update(instructionsToUpdate);
 ```
 
 In the example above, update is called with the database object data, the table name "the_table", an object representing the column and the new data {name: "Alex"}, and an object representing the condition {age: 27}. This means that the name column will be updated to "Alex" if the age column matches the value 27. For example, if there is a record with the name "Jhon" and the age 27, it will be updated to "Alex".
@@ -209,27 +299,27 @@ An interesting feature that this method has, is that some value of some update c
 
 ```javascript
 const instructionsToUpdate = {
-    db : data,
+    db : 'dataBase1',
     table : "the_table",
     update : {age: (x)=>{return (x + 1)}},
     where : {name: "Alex"},
-    conector : "OR"
+    connector : "OR"
 }
-sqliteExpress.update(instructionsToUpdate);
+session.update(instructionsToUpdate);
 ```
 in this case it will select all the rows whose column "name" contains "Alex", it will take the current value of that cell and add 1. And it also works with arrays or objects. You can create functions that add an item to the array and return it for example.
 
 ```javascript
 const instructionsToUpdate = {
     //imagine that there is only one "Alex" and his city columa contains ["New York, "Paris"]
-    db : data,
+    db : 'dataBase1',
     table : "the_table",
     update : {city: (x)=>{return [...x, "Londres"]}},
     where : {name: "Alex"},
-    conector : "OR"
+    connector : "OR"
     //now your columa city will be ["New York, "Paris", "Londres"]
 }
-sqliteExpress.update(instructionsToUpdate);
+session.update(instructionsToUpdate);
 ```
 
 ## delete
@@ -241,23 +331,23 @@ The `delete` method is used to delete records from a specific table in an SQLite
 To delete rows from a table based on a specific condition, use the following syntax:
 
 ```javascript
-sqliteExpress.delete(data, "the_table", {age: 27});
+session.delete('dataBase1', "the_table", {age: 27});
 ```
 or
 ```javascript
 const rowToDelete = {
-    db : data,
+    db : 'dataBase1',
     table : "the_table",
     where : {age: 27}
 }
-sqliteExpress.delete(data, "the_table", {age: 27});
+sqliteExpress.delete('dataBase1', "the_table", {age: 27});
 ```
 
 In the example above, delete is called with the database object data, the table name "the_table", and an object representing the condition {age: 27}. This means that all records in the table with an age column equal to 27 will be deleted.
 
 ## select
 
-The `select` method is used to retrieve data from a specific table in an SQLite database based on a condition. It requires four parameters: the database object, the table name as a string, the column name as a string (currently only supports one column), and an object representing the condition for the selection. It returns a Promise that resolves to the selected data.
+The `select` method is used to retrieve data from a specific table in an SQLite database based on a condition. It requires four primary parameters: the database identifier, the table name as a string, the column name as a string (currently only supports one column), and an object representing the condition for the selection. It returns a Promise that resolves to the selected data.
 
 ### Usage
 
@@ -265,31 +355,97 @@ To select data from a table based on a specific condition, use the following syn
 
 ```javascript
 async function theData() {
-    console.log(await sqliteExpress.select(data, "the_table", "city", {name: "Alex"}));
+    console.log(await session.select('dataBase1', "the_table", "city", {name: "Alex"}));
 }
-
 theData();
 ```
+
 or
+
 ```javascript
 const objectToQuery = {
-    db : data,
-    table : "the_table",
-    columns : "city",
-    where : {name: "Alex"}
+    db: 'dataBase1',
+    table: "the_table",
+    select: "city",
+    where: {name: "Alex"}
 }
 async function theData() {
-    console.log(await sqliteExpress.select(objectToQuery));
+    console.log(await session.select(objectToQuery));
 }
-
 theData();
 ```
 
-In the example above, select is called with the database object data, the table name "the_table", the column name "city", and an object representing the condition {name: "Alex"}. This means that the method will retrieve the values from the "city" column where the name column matches "Alex". The selected data is returned as a Promise, and in this example, it is logged to the console.
+You can also use `.then` for handling the Promise:
 
-The program detects if what there is inside is a stringified object and it stops it automatically, the same with the booleans. Also the program detects if you are receiving only one value and it gives it directly to you so that we do not find ourselves with the typical situation that we have to enter in an array with an object of a single property. In the same way if we receive a single row this method will return an object with the columns and their values without the array.
+```javascript
+session.select(objectToQuery).then(data => {
+    console.log(data);
+});
+```
+
+In the examples above, the `select` method is called with the database identifier `dataBase1`, the table name "the_table", the column name "city", and an object representing the condition {name: "Alex"}. The method retrieves the values from the "city" column where the `name` column matches "Alex". The selected data is returned as a Promise, and it is logged to the console.
+
+The program detects if what is passed in is a stringified object and automatically handles it. The same goes for booleans. Additionally, if the method detects a single value being received, it directly provides the value to avoid the common situation of accessing a single-property object inside an array.
+
+In this latest version, three more parameters were integrated for this method:
+
+- `processColumns`: (default: true)  
+- `processRows`: (default: true)  
+- `emptyResult`: (default: undefines)  
+
+By default, sqlite3's `select` method returns an array of objects. However, there are times when you might want to select just one column from one row, leading to repetitive code like `rows[0].nombre`. With these parameters, you can decide if you want to unwrap the result object.
+
+If the number of selected rows is 1 and `processRows` is set to true, the method will return the row outside of the array. Similarly, if there's only one column and `processColumns` is set to true, the value of that column will be returned outside of the object.
+
+Furthermore, if the `select` method's result doesn't match any rows with the query, it will return the value set in `emptyResult`. This can be useful in different scenarios. Depending on your requirements, you might want it to return an empty array, an empty string, an empty object, null, false, or any other value you specify.
+
+## Recommendations
+
+- **Avoid Referencing the Same Database from Different Instances**: 
+    It's not advisable to reference the same database from two different `SqliteExpress` instances.
+
+    ```javascript
+    const instance1 = new SqliteExpress();
+    const instance2 = new SqliteExpress();
+
+    instance1.createDB({route : '.the_sameroute/the_same_DB.db'});
+    instance2.createDB({route : '.the_sameroute/the_same_DB.db'});
+    ```
+
+    The class is designed to manage the waiting list of a database in order. However, with two instances pointing to the same file, there could be an asynchronicity conflict, negating the package's benefits.
+
+- **Different Instances for Different Databases**: 
+    It's generally a good idea to create different instances for different databases. This allows you to assign default values suitable for each instance. Nevertheless, the class is equipped to handle multiple databases if desired.
+
+- **Utilize Default Values**: 
+    Default values are handy and allow for cleaner subsequent code.
+
+- **Method Parameters**: 
+    It's recommended to use methods by passing parameters as objects with their respective property names. While you can use parameters in order, it's not always practical when combined with default values. 
+
+    If you wish to use a default value for one of the later parameters, simply don't include it. But if you want to use a default for an earlier parameter, you should mark it as `undefined`.
+
+    ```javascript
+    session.defaultOptions.db = 'dataBase1';
+    session.insert(undefined, 'the_table', /*etc...*/);
+    ```
+
+    For accurate parameter handling, it's crucial to maintain their order. Below is a list showing the order of parameters for each method:
+
+    ```javascript
+    const orderOfParams = {
+        createDB: ['route', 'key', 'logQuery'],
+        createTable: ['db', 'table', 'columns', 'logQuery'],
+        insert: ['db', 'table', 'row', 'logQuery'],
+        select: ['db', 'table', 'select', 'where', 'connector', 'processColumns', 'processRows', 'emptyResult', 'logQuery'],
+        update: ['db', 'table', 'update', 'where', 'connector', 'logQuery'],
+        delete: ['db', 'table', 'where', 'connector', 'logQuery']
+    }
+    ```
+
+- **The `logQuery` Parameter**: 
+    In this version, all methods have a `logQuery` parameter which defaults to `true`. This prints the generated SQL query to the console for further analysis. If you'd prefer less information in the console, you can set its default value to `false` or pass a `false` value to the methods as you see fit.
 
 
-### Return Value
-
-The select method returns a Promise that resolves to the selected data from the specified column based on the provided condition.
+# License
+This software is licensed under the ISC License. The ISC License is a permissive free software license, allowing for freedom to use, modify, and redistribute the software, with some conditions. For the complete terms and conditions, please see the LICENSE file in the root directory of this project.
