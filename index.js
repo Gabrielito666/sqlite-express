@@ -5,9 +5,9 @@ const processParams = require( './modules/processParams' );
 const { DefaultOptions } = require( './modules/classes' );
 
 class SqliteExpress{
-    constructor(){
+    constructor(root){
         this._dataBasesList = {};
-        this._rootPath = path.dirname( module.parent.filename );
+        this._rootPath = path.dirname( root ? root : (module.parent.filename ? module.parent.filename : '.') );
         this._defaultOptions = new DefaultOptions( this._rootPath );
     }
     set rootPath( value ){

@@ -21,6 +21,15 @@ const session = new SqliteExpress();
 
 With this new instance, you can execute all the previous methods in the same way you used to.
 
+if you are using an environment with complex path handling such as next.js or react-router, it is recommended to instantiate the class with a parameter with the root path from which you are instantiating the class.
+
+This avoids conflicts, however in simple applications it is not necessary.
+
+```javascript
+const SqliteExpress = require('./index');
+const session = new SqliteExpress('my/root/path');
+```
+
 #### Key Features
 
 1. **Queue System:** The most substantial improvement is the integration of a queue to serialize operations. This avoids conflicts with the order of operations and prevents database overload. Thus, you're free to use loops.
@@ -62,8 +71,6 @@ session.defaultOptions.set({
 
 width set method yo don't need put all default options. Just the ones you want.
 
-# Methods
-All of the following methods can receive parameters in order or an object.
 
 # Methods
 
