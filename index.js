@@ -7,7 +7,7 @@ const { DefaultOptions } = require( './modules/classes' );
 class SqliteExpress{
     constructor(root){
         this._dataBasesList = {};
-        this._rootPath = path.dirname( root ? root : (module.parent.filename ? module.parent.filename : '.') );
+        this._rootPath =  root ? root : (module.parent.filename ? path.dirname(module.parent.filename) : '.');
         this._defaultOptions = new DefaultOptions( this._rootPath );
     }
     set rootPath( value ){
