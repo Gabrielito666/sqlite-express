@@ -5,7 +5,7 @@ module.exports = {
 		function armarCondicion(obj, connector, arrayCondiciones){
 			let condicion;
 			let operator;
-			cols =Object.keys(obj)
+			let cols = Object.keys(obj);
 			cols.forEach(col=>{
 				operator = '=';
 				if(is.o(obj[col]) && !is.a(obj[col])){
