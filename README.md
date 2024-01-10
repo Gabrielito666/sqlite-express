@@ -406,6 +406,86 @@ If the number of selected rows is 1 and `processRows` is set to true, the method
 
 Furthermore, if the `select` method's result doesn't match any rows with the query, it will return the value set in `emptyResult`. This can be useful in different scenarios. Depending on your requirements, you might want it to return an empty array, an empty string, an empty object, null, false, or any other value you specify.
 
+# since version 3.0.4 we have two new methods: 'exist' and 'count'.
+
+## exist
+
+The `exist` method is used to find out if there is a row in a table that meets a given condition, or not. It returns a Promise that resolves to a boolean. It requires as parameters the database as a string, the table name as a string, the condition as a where object and a connector if desired.
+
+### Usage
+
+to check if there is at least one row that meets the condition you can use the following syntax:
+
+```javascript
+async function theData() {
+    console.log(await session.exist('dataBase1', "the_table", {name: "Alex"}));
+}
+theData();
+```
+
+or
+
+```javascript
+const objectToQuery = {
+    db: 'dataBase1',
+    table: "the_table",
+    where: {name: "Alex"}
+}
+async function theData() {
+    console.log(await session.exist(objectToQuery));
+}
+theData();
+```
+
+You can also use `.then` for handling the Promise:
+
+```javascript
+session.exist(objectToQuery).then(data => {
+    console.log(data);
+});
+```
+
+if in the table 'the_table' of the database 'dataBase1' there is at least one row whose column 'name' has as value 'Alex'. The code will return a promise that will resolve to true, if on the contrary, there is no row that meets this condition, the returned promise will resolve to false.
+
+## count
+
+The `count` method is used to know the number of rows that meet a condition. It returns a Promise that resolves to a number. It requires as parameters the database as a string, the table name as a string, the condition as a where object and a connector if desired.
+
+### Usage
+
+to know the number of rows that meet a condition you can use the following syntax:
+
+```javascript
+async function theData() {
+    console.log(await session.count('dataBase1', "the_table", {name: "Alex"}));
+}
+theData();
+```
+
+or
+
+```javascript
+const objectToQuery = {
+    db: 'dataBase1',
+    table: "the_table",
+    where: {name: "Alex"}
+}
+async function theData() {
+    console.log(await session.count(objectToQuery));
+}
+theData();
+```
+
+You can also use `.then` for handling the Promise:
+
+```javascript
+session.count(objectToQuery).then(data => {
+    console.log(data);
+});
+```
+
+This code will check the table 'the_table' in the database 'dataBase1' and will count the rows whose value in the column 'name' is 'Alex'. Then it will return a promise that will be resolved to the number found.
+
 ## Recommendations
 
 - **Avoid Referencing the Same Database from Different Instances**: 
@@ -446,7 +526,9 @@ Furthermore, if the `select` method's result doesn't match any rows with the que
         insert: ['db', 'table', 'row', 'logQuery'],
         select: ['db', 'table', 'select', 'where', 'connector', 'processColumns', 'processRows', 'emptyResult', 'logQuery'],
         update: ['db', 'table', 'update', 'where', 'connector', 'logQuery'],
-        delete: ['db', 'table', 'where', 'connector', 'logQuery']
+        delete: ['db', 'table', 'where', 'connector', 'logQuery'],
+        exist: ['db', 'table', 'where', 'conector', 'logQuery'],
+        count: ['db', 'table', 'where', 'conector', 'logQuery']
     }
     ```
 

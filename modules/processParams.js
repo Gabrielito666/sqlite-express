@@ -8,7 +8,9 @@ module.exports = ( method, params, defaults ) => {
         insert : [ 'db', 'table', 'row', 'logQuery' ],
         select : [ 'db', 'table', 'select', 'where', 'connector', 'processColumns', 'processRows', 'emptyResult', 'logQuery' ],
         update : [ 'db', 'table', 'update', 'where', 'connector', 'logQuery' ],
-        delete : [ 'db', 'table', 'where', 'connector', 'logQuery' ]
+        delete : [ 'db', 'table', 'where', 'connector', 'logQuery' ],
+        exist : [ 'db', 'table', 'where', 'conector', 'logQuery' ],
+        count : [ 'db', 'table', 'where', 'conector', 'logQuery' ]
     };
     let [ methodDefaults, correctParams ] = [ {}, {} ];
     paramsMethodStructure[ method ].forEach( p => methodDefaults[ p ] = defaults[ p ] );

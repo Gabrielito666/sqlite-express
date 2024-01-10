@@ -45,6 +45,16 @@ class SqliteExpress{
         parameters : params,
         context : this
     } ) };
+    exist( ...params ){ return onOperation( {
+        method : 'exist',
+        parameters : params,
+        context : this
+    } ) };
+    count( ...params ){ return onOperation( {
+        method : 'count',
+        parameters : params,
+        context : this
+    } ) };
 }
 
 module.exports = SqliteExpress;
