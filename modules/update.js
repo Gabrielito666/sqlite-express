@@ -49,7 +49,7 @@ module.exports = async( { db, table, update, where, connector, logQuery } ) => {
                 return;
             }
             if ( logQuery ) console.log( `Row updated successfully in table ${ table }.` );
-            resolve();
+            resolve(this.changes);
         });
     
         function strngifyData ( data ){

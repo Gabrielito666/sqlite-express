@@ -17,7 +17,7 @@ module.exports = ( { db, table, row, logQuery } ) => {
                 reject( err );
             } else {
                 if( logQuery ) console.log( 'Row inserted successfully.' );
-                resolve();
+                resolve(this.changes === 1);
             }
         });
     });

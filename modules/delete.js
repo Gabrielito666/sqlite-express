@@ -12,7 +12,7 @@ module.exports = ( { db, table, where, connector, logQuery } ) => {
         console.error( err )
         reject( err );
       }else{
-        resolve();}
+        resolve(this.changes);}
     });
   });
 };

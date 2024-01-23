@@ -44,6 +44,7 @@ db
 key
 table
 where
+join
 columns
 select = '*'
 connector = 'AND'
@@ -204,6 +205,8 @@ session.insert( rowToInsert );
 ```
 you should not stop the booleans to text either. The program understands that you want to convert them to text and saves them without any problems.
 
+Since version 3.0.5 the method returns a promise that is resolved with a true and rejected with an error.
+
 ## where constructor
 
 The last 3 methods (update, delete and select) have among their possible parameters the where.
@@ -329,6 +332,8 @@ const instructionsToUpdate = {
 session.update(instructionsToUpdate);
 ```
 
+since version 3.0.5 the method returns a promise that resolves to the number of modified rows.
+
 ## delete
 
 The `delete` method is used to delete records from a specific table in an SQLite database based on a condition. It requires three parameters: the database object, the table name as a string, and an object representing the condition for the deletion.
@@ -351,6 +356,8 @@ sqliteExpress.delete('dataBase1', "the_table", {age: 27});
 ```
 
 In the example above, delete is called with the database object data, the table name "the_table", and an object representing the condition {age: 27}. This means that all records in the table with an age column equal to 27 will be deleted.
+
+since version 3.0.5 the method returns a promise that resolves to the number of deleted rows.
 
 ## select
 
@@ -392,6 +399,38 @@ session.select(objectToQuery).then(data => {
 
 In the examples above, the `select` method is called with the database identifier `dataBase1`, the table name "the_table", the column name "city", and an object representing the condition {name: "Alex"}. The method retrieves the values from the "city" column where the `name` column matches "Alex". The selected data is returned as a Promise, and it is logged to the console.
 
+The select parameter accepts several formats for the columns. One is as a simple string, in this case if you want to call more than one column must be separated by commas, this format accepts the use of "AS" directly.
+
+example:
+```javascript
+-'column_1, columns_2, column_3'
+-'table_1.column_1, table_1.column_2, table_2.column_3'
+-'column_1 AS newName, column_2'
+```
+
+an array with strings corresponding to the desired columns is also accepted as a parameter.
+
+example:
+```javascript
+-[ 'column_1', 'columns_2', 'column_3' ]
+-[ 'table_1.column_1', 'table_1.column_2', 'table_2.column_3' ]
+-[ 'column_1 AS newName', 'column_2' ]
+```
+
+Finally, you can also use an array of objects for better handling of the "AS" clauses.
+
+example:
+```javascript
+-[   { column : 'column_1' }, { column : 'columns_2' }, { column : 'column_3' } ]
+-[
+    { table : 'table_1', column : 'column_1' },
+    { table : 'table_1', column : 'column_2' }, 
+    { table : 'table_2', column : 'column_3' }
+]
+-[ { column : 'column_1', as : 'newName' }, { column : 'column_2' } ]
+```
+this last form is available as of version 3.0.5
+
 The program detects if what is passed in is a stringified object and automatically handles it. The same goes for booleans. Additionally, if the method detects a single value being received, it directly provides the value to avoid the common situation of accessing a single-property object inside an array.
 
 In this latest version, three more parameters were integrated for this method:
@@ -405,6 +444,104 @@ By default, sqlite3's `select` method returns an array of objects. However, ther
 If the number of selected rows is 1 and `processRows` is set to true, the method will return the row outside of the array. Similarly, if there's only one column and `processColumns` is set to true, the value of that column will be returned outside of the object.
 
 Furthermore, if the `select` method's result doesn't match any rows with the query, it will return the value set in `emptyResult`. This can be useful in different scenarios. Depending on your requirements, you might want it to return an empty array, an empty string, an empty object, null, false, or any other value you specify.
+
+### Join parameter
+
+Since version 3.0.5 the join parameter is accepted for more complex selections. This parameter in its simplest form looks like this:
+
+```javascript
+const joinExample = { 
+    table : 'secondary_table',
+    on : 'common_column'
+}
+```
+
+the resulting join would look similar to this:
+
+```sql
+INNER JOIN secondary_table ON main_table.common_column = secondary_table.common_column
+```
+
+this mode assumes that you want to join two tables that have a column with the same name, if you want to join using columns with different names you can use an array in `on` :
+
+```javascript
+const joinExample = { 
+    table : 'secondary_table',
+    on : [ 'main_table_column', 'secondary_table_column' ]
+}
+```
+
+the resulting join would look similar to this:
+
+```sql
+INNER JOIN secondary_table ON main_table.main_table_column = secondary_table.secondary_table_column
+```
+
+as you can see, an `INNER JOIN` will be used by default. if you want another type of join you must add the type property in this way:
+
+```javascript
+const joinExample = { 
+    table : 'secondary_table',
+    type : 'LEFT',
+    on : [ 'main_table_column', 'secondary_table_column' ]
+}
+```
+
+the resulting join would look similar to this:
+
+```sql
+LEFT JOIN secondary_table ON main_table.main_table_column = secondary_table.secondary_table_column
+```
+so you can use the `INNER`, `LEFT` and `CROSS` joins.
+
+These options assume that the operator you want to use is `=`. However if you want to use another one you will have to transform `on` into an object with the `columns` and `operator` properties as follows:
+
+```javascript
+const joinExample = { 
+    table : 'secondary_table',
+    type : 'LEFT',
+    on : {
+        columns :[ 'main_table_column', 'secondary_table_column' ],
+        operator : '>'
+    }
+}
+```
+
+the resulting join would look similar to this:
+
+```sql
+LEFT JOIN secondary_table ON main_table.main_table_column > secondary_table.secondary_table_column
+```
+
+and finally, if you want to join more than two tables you can pass an array to the join property. This array must have objects like the previous ones:
+
+```javascript
+const joinExample = [
+    { 
+        table : 'secondary_table',
+        type : 'LEFT',
+        on : {
+            columns :[ 'main_table_column', 'secondary_table_column' ],
+            operator : '>'
+        }
+    },
+    {
+        table : 'other_secondary_table',
+        on : [ 'main_table_column', 'other_secondary_table_column' ],
+
+    }
+]
+```
+
+the resulting join would look similar to this:
+
+```sql
+LEFT JOIN secondary_table 
+    ON main_table.main_table_column > secondary_table.secondary_table_column
+INNER JOIN other_secondary_table 
+    ON main_table.main_table_column = other_secondary_table.secondary_table_column
+```
+
 
 # since version 3.0.4 we have two new methods: 'exist' and 'count'.
 
@@ -524,13 +661,15 @@ This code will check the table 'the_table' in the database 'dataBase1' and will 
         createDB: ['route', 'key', 'logQuery'],
         createTable: ['db', 'table', 'columns', 'logQuery'],
         insert: ['db', 'table', 'row', 'logQuery'],
-        select: ['db', 'table', 'select', 'where', 'connector', 'processColumns', 'processRows', 'emptyResult', 'logQuery'],
+        select: ['db', 'table', 'select', 'where', 'connector', 'join', 'processColumns', 'processRows', 'emptyResult', 'logQuery'],
         update: ['db', 'table', 'update', 'where', 'connector', 'logQuery'],
         delete: ['db', 'table', 'where', 'connector', 'logQuery'],
         exist: ['db', 'table', 'where', 'conector', 'logQuery'],
         count: ['db', 'table', 'where', 'conector', 'logQuery']
     }
     ```
+
+    note that since version 3.0.5 changed the order of the selcect parameters since join was added, so I recommend to use the parameters as objects.
 
 - **The `logQuery` Parameter**: 
     In this version, all methods have a `logQuery` parameter which defaults to `true`. This prints the generated SQL query to the console for further analysis. If you'd prefer less information in the console, you can set its default value to `false` or pass a `false` value to the methods as you see fit.

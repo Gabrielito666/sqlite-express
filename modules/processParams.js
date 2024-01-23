@@ -6,7 +6,7 @@ module.exports = ( method, params, defaults ) => {
         createDB : [ 'route', 'key', 'logQuery' ],
         createTable : [ 'db', 'table', 'columns', 'logQuery' ],
         insert : [ 'db', 'table', 'row', 'logQuery' ],
-        select : [ 'db', 'table', 'select', 'where', 'connector', 'processColumns', 'processRows', 'emptyResult', 'logQuery' ],
+        select : [ 'db', 'table', 'select', 'where', 'connector', 'join', 'processColumns', 'processRows', 'emptyResult', 'logQuery' ],
         update : [ 'db', 'table', 'update', 'where', 'connector', 'logQuery' ],
         delete : [ 'db', 'table', 'where', 'connector', 'logQuery' ],
         exist : [ 'db', 'table', 'where', 'conector', 'logQuery' ],
@@ -24,4 +24,4 @@ module.exports = ( method, params, defaults ) => {
     }
 
     return finalParams;
-}
+};
