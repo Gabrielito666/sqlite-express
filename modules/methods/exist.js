@@ -1,5 +1,5 @@
-const consoleQuery = require( './submodules/consoleQuery' );
-const whereConstructor = require( './submodules/where' );
+const consoleQuery = require( '../submodules/consoleQuery' );
+const whereConstructor = require( '../submodules/where' );
 module.exports = ( { db, table, where, connector, logQuery } ) => {
 
     return new Promise( ( resolve, reject ) => {

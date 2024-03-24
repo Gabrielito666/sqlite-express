@@ -1,7 +1,7 @@
 const select = require( './select' );
-const whereConstructor = require( './submodules/where' );
-const is = require( './submodules/is' );
-const consoleQuery = require( './submodules/consoleQuery' );
+const whereConstructor = require( '../submodules/where' );
+const is = require( '../submodules/is' );
+const consoleQuery = require( '../submodules/consoleQuery' );
 module.exports = async( { db, table, update, where, connector, logQuery } ) => {
 
     return new Promise( async( resolve, reject )=>{

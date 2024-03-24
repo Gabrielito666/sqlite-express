@@ -1,6 +1,6 @@
-const signs = require( './submodules/signos' );
-const is = require( './submodules/is' );
-const consoleQuery = require( './submodules/consoleQuery' );
+const signs = require( '../submodules/signos' );
+const is = require( '../submodules/is' );
+const consoleQuery = require( '../submodules/consoleQuery' );
 module.exports = ( { db, table, row, logQuery } ) => {
 
     return new Promise( ( resolve, reject ) => {

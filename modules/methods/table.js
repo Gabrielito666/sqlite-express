@@ -1,4 +1,4 @@
-const consoleQuery = require( './submodules/consoleQuery' );
+const consoleQuery = require( '../submodules/consoleQuery' );
 module.exports = ( { db, table, columns, logQuery } ) => {
 
   return new Promise( ( resolve, reject )=>{
