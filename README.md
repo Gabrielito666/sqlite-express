@@ -1,6 +1,10 @@
-### SQLite-Express Version 3
+### SQLite-Express Version 4
 
-The third version of SQLite-Express is much more convenient and powerful, as it has evolved from being a simple object with methods to a full-fledged class.
+sqlite-express is an npm package designed to make interaction with sqlite3 simpler. It has a promise-based design and without as much paraphernalia as the original package.
+
+The third version of SQLite-Express is much more comfortable and powerful, since it has gone from being a simple object with methods to a full-fledged class.
+
+Since the fourth version that does not allow single parameters and only works by means of objects as a single parameter.
 
 #### Installation
 
@@ -152,11 +156,6 @@ The `createTable` method is used to create a new table in an SQLite database by 
 To create a table in the database, use the following syntax:
 
 ```javascript
-session.createTable( 'dataBase1', "the_table", { name: "text", age: "integer", city: "text" } );
-
-```
-or
-```javascript
 const objectToCreateTable = {
     db : 'dataBase1',
     table : "the_table",
@@ -176,10 +175,6 @@ The `insert` method is used to insert data into a specific table in an SQLite da
 
 To insert data into a table in the database, use the following syntax:
 
-```javascript
-session.insert( 'dataBase1', "the_table", { name: "Jhon", age: 27, city: "New York" } );
-```
-or
 ```javascript
 const rowToInsert = {
     db : 'dataBase1',
@@ -289,10 +284,6 @@ The `update` method is used to update records in a specific table in an SQLite d
 To update records in a table based on a specific condition, use the following syntax:
 
 ```javascript
-session.update('dataBase1', "the_table", {name: "Alex"}, {age: 27}, "OR");
-```
-or
-```javascript
 const instructionsToUpdate = {
     db : 'dataBase1',
     table : "the_table",
@@ -342,17 +333,14 @@ The `delete` method is used to delete records from a specific table in an SQLite
 
 To delete rows from a table based on a specific condition, use the following syntax:
 
-```javascript
-session.delete('dataBase1', "the_table", {age: 27});
-```
-or
+
 ```javascript
 const rowToDelete = {
     db : 'dataBase1',
     table : "the_table",
     where : {age: 27}
 }
-sqliteExpress.delete('dataBase1', "the_table", {age: 27});
+sqliteExpress.delete(rowToDelete);
 ```
 
 In the example above, delete is called with the database object data, the table name "the_table", and an object representing the condition {age: 27}. This means that all records in the table with an age column equal to 27 will be deleted.
@@ -366,15 +354,6 @@ The `select` method is used to retrieve data from a specific table in an SQLite 
 ### Usage
 
 To select data from a table based on a specific condition, use the following syntax:
-
-```javascript
-async function theData() {
-    console.log(await session.select('dataBase1', "the_table", "city", {name: "Alex"}));
-}
-theData();
-```
-
-or
 
 ```javascript
 const objectToQuery = {
@@ -554,15 +533,6 @@ The `exist` method is used to find out if there is a row in a table that meets a
 to check if there is at least one row that meets the condition you can use the following syntax:
 
 ```javascript
-async function theData() {
-    console.log(await session.exist('dataBase1', "the_table", {name: "Alex"}));
-}
-theData();
-```
-
-or
-
-```javascript
 const objectToQuery = {
     db: 'dataBase1',
     table: "the_table",
@@ -593,15 +563,6 @@ The `count` method is used to know the number of rows that meet a condition. It 
 to know the number of rows that meet a condition you can use the following syntax:
 
 ```javascript
-async function theData() {
-    console.log(await session.count('dataBase1', "the_table", {name: "Alex"}));
-}
-theData();
-```
-
-or
-
-```javascript
 const objectToQuery = {
     db: 'dataBase1',
     table: "the_table",
@@ -623,6 +584,58 @@ session.count(objectToQuery).then(data => {
 
 This code will check the table 'the_table' in the database 'dataBase1' and will count the rows whose value in the column 'name' is 'Alex'. Then it will return a promise that will be resolved to the number found.
 
+## executeSQL
+
+This method allows the direct use of sql allowing the package to reach its maximum versatility.
+
+it receives the parameters: 
+- db
+- query
+- logQuery
+- emptyResult
+- processColumns
+- processRows
+
+and returns a promise that can resolve to rows (in case of using select) or the number of altered rows in case of using insert delete or upudate.
+
+### Usage
+
+```javascript
+    const db = 'dataBase1'
+
+    const query =
+    `
+    SELECT * FROM my_table WHERE name = ?-John-?
+    `;
+
+    const result = await session.executeSQL({ db, query })
+    console.log(result);
+```
+note the use of __?- -?__
+these "keys" are used to replace the typical placeholders.
+
+I have always found placeholders to be cumbersome, it adds parameters to the methods and it is not clear what you are trying to do at a glance.
+
+with this method the sql statement is clearer. however to resist sql injection and increase security... my system uses the traditional placeholders on the back... therefore you must mark the parts of the statement that come from outside with __?- -?__
+
+```javascript
+    const my_data = { /* data coming from outside */ }
+
+    const db = 'dataBase1'
+    const query =
+    `
+    SELECT * FROM my_table WHERE name = ?-${ my_data.name }-?
+    `;
+
+    const result = await session.executeSQL({ db, query })
+    console.log(result);
+```
+Another important consideration is that given the sqlite3 architecture, you cannot mix SELECT queries with other queries at the first level.
+
+If you are going to do a select, you must do only one select and your statement must begin with SELECT
+
+if you are not going to do any select in the first level you can do whatever you want with the rest of the clauses (if you do a select in a query that does not start with ``SELECT`, there will be no error, but no rows will be returned)
+
 ## Recommendations
 
 - **Avoid Referencing the Same Database from Different Instances**: 
@@ -643,31 +656,6 @@ This code will check the table 'the_table' in the database 'dataBase1' and will 
 
 - **Utilize Default Values**: 
     Default values are handy and allow for cleaner subsequent code.
-
-- **Method Parameters**: 
-    It's recommended to use methods by passing parameters as objects with their respective property names. While you can use parameters in order, it's not always practical when combined with default values. 
-
-    If you wish to use a default value for one of the later parameters, simply don't include it. But if you want to use a default for an earlier parameter, you should mark it as `undefined`.
-
-    ```javascript
-    session.defaultOptions.db = 'dataBase1';
-    session.insert(undefined, 'the_table', /*etc...*/);
-    ```
-
-    For accurate parameter handling, it's crucial to maintain their order. Below is a list showing the order of parameters for each method:
-
-    ```javascript
-    const orderOfParams = {
-        createDB: ['route', 'key', 'logQuery'],
-        createTable: ['db', 'table', 'columns', 'logQuery'],
-        insert: ['db', 'table', 'row', 'logQuery'],
-        select: ['db', 'table', 'select', 'where', 'connector', 'join', 'processColumns', 'processRows', 'emptyResult', 'logQuery'],
-        update: ['db', 'table', 'update', 'where', 'connector', 'logQuery'],
-        delete: ['db', 'table', 'where', 'connector', 'logQuery'],
-        exist: ['db', 'table', 'where', 'conector', 'logQuery'],
-        count: ['db', 'table', 'where', 'conector', 'logQuery']
-    }
-    ```
 
     note that since version 3.0.5 changed the order of the selcect parameters since join was added, so I recommend to use the parameters as objects.
 
