@@ -5,12 +5,12 @@ const executeSQL = ({ db, query, logQuery, emptyResult, processColumns, processR
 {
     const prepareStatementWithMarks = sql =>
     {
-        const values = [];
+        const valuesStr = [];
         const placeholderRegex = /\?-(.*?)-\?/g;
         let depth = 0;
     
         let placeholderSql = sql.replace(placeholderRegex, (match, value) => {
-            values.push(value.trim());
+            valuesStr.push(value.trim());
             return '?';
         });
         
@@ -21,14 +21,20 @@ const executeSQL = ({ db, query, logQuery, emptyResult, processColumns, processR
         }
         if (depth > 0) throw new Error("Syntax error: opening of marker without corresponding closing.");
     
-        return { placeholderSql, values };
+        return { placeholderSql, valuesStr };
     };
 
-    const { placeholderSql, values } = prepareStatementWithMarks(query);
+    const { placeholderSql, valuesStr } = prepareStatementWithMarks(query);
     const queryType = determineQueryType(placeholderSql);
     return new Promise(( resolve, reject ) =>
     {
-        if(logQuery) consoleQuery(placeholderSql, values);
+        if(logQuery) consoleQuery(placeholderSql, valuesStr);
+        const values = valuesStr.map(v=>
+        {
+            if(v.toLowerCase() === 'null') return null;
+            else if(!isNaN(v) && v.trim() !== '') return Number(v);
+            else return v;
+        })
         if(queryType === 'select')
         {
             db.all(placeholderSql, values, (err, rows) =>
