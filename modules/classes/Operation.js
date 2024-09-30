@@ -14,12 +14,15 @@ class Operation
         {
             const result = await this._method(this._parameters);
             this._resolve(result);
-            this._db.runWaitingList();
         }
         catch(error)
         {
             this._reject(error)
-        };
+        }
+        finally
+        {
+            this._db.runWaitingList();
+        }
     }
 };
 module.exports = Operation;
