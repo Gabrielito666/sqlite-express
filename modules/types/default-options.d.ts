@@ -7,7 +7,7 @@ export interface DefaultOptionsProps {
   key?: string;
   table?: string;
   where?: object;
-  columns?: {[string]: ColumnType};
+  columns?: {[key: string]: ColumnType};
   select?: string | string[];
   connector?: "AND" | "OR";
   update?: object;
@@ -47,7 +47,7 @@ export interface DefaultOptionsPrototype
     set key(value: string):void;
     set table(value: string):void;
     set where(value: object):void;
-    set columns(value: {[string]: ColumnType}):void;
+    set columns(value: {[key: string]: ColumnType}):void;
     set select(value: string | string[]):void;
     set connector(value: "AND" | "OR"):void;
     set update(value: object):void;
@@ -68,7 +68,7 @@ export interface DefaultOptionsType extends DefaultOptionsPrototype
     private _key?: string;
     private _table?: string;
     private _where?: object;
-    private _columns?: {[string]: ColumnType};
+    private _columns?: {[key: string]: ColumnType};
     private _select?: string | string[];
     private _connector?: "AND" | "OR";
     private _update?: object;

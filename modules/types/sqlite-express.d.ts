@@ -1,6 +1,6 @@
 import { Database } from "sqlite3";
-import { DBType } from "../classes/DB";
-import { DefaultOptionsType } from "../classes/DefaultOptions";
+import { DBType } from "./db";
+import { DefaultOptionsType } from "./default-options";
 
 type ColumnType = 'text'|'integer'|'datetime'|"TEXT"|"INTEGER"|"DATETIME";
 
