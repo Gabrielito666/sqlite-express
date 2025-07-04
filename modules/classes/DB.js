@@ -1,44 +1,63 @@
-const Operation = require('./Operation');
-class DB
+/**
+ * @typedef {import("../types/db.d.ts").DBConstructor} DBConstructor
+ * @typedef {import("../types/db.d.ts").DBPrototype} DBPrototype
+ * @typedef {import("../types/db.d.ts").DBType} DBType
+ * @typedef {import("../types/db.d.ts").dbConstructorFunc} dbConstructorFunc
+ * @typedef {import("../types/db.d.ts").dbAddOperationMethod} dbAddOperationMethod
+*/
+
+/**
+ * @class
+ * @implements {DBPrototype}
+*/
+class DBClass
 {
-    constructor({ db, key })
+    /**
+     * @this {DBType}
+     * @type {dbConstructorFunc}
+    */
+    constructor(sqliteDb, key)
     {
-        this._db = db;
-        this._key = key;
-        this._waitingList = [];
-        this._isRunning = false;
+        this.sqliteDb = sqliteDb;
+        this.key = key;
+        this.waitingList = [];
+        this.isRunning = false;
         this.runWaitingList();
     }
-    get db(){ return this._db }
-    addOperation({ method, parameters, resolve, reject })
+
+    /**@type {dbAddOperationMethod}*/
+    addOperation(method, parameters)
     {
-        this._waitingList.push
-        (
-            new Operation
-            ({
-                method,
-                parameters : { ...parameters, db : this.db },
-                db : this,
-                resolve,
-                reject
-            })
-        );
-        if(this._waitingList.length > 0 && !this._isRunning) this.runWaitingList()
+        return new Promise((resolve, reject) =>
+        {
+            const runOperation = () =>
+            {
+                const operationPromise = new Promise((res, rej) => {
+                    method({db: this.sqliteDb, ...parameters}).then(res).catch(rej);
+                });
+                operationPromise.then(resolve).catch(reject);
+                return operationPromise;
+            }
+
+            this.waitingList.push(runOperation);
+            
+            if(this.waitingList.length > 0 && !this.isRunning) this.runWaitingList();
+        });
     };
-    runWaitingList()
+    async runWaitingList()
     {
-        this._isRunning = true;
-        if(this._waitingList.length > 0)
+        this.isRunning = true;
+        while(this.waitingList.length > 0)
         {
-            let firstOpertion = this._waitingList.shift();
-            firstOpertion.run();
+            const operation = this.waitingList.shift();
+            await operation();
         }
-        else
-        {
-            this._isRunning = false;
-            //this._db.close(); //REVISARRR
-        }
+        this.isRunning = false;
+        //this.sqliteDb.close(); //REVISARRR
     };
 };
+
+/**@type {DBConstructor}*/
+const DB = DBClass;
 
 module.exports = DB;

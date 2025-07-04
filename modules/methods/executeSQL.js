@@ -1,6 +1,9 @@
 const determineQueryType = require('./../submodules/determineQueryType');
 const processResult = require('../submodules/processResult');
 const consoleQuery = require('../submodules/consoleQuery');
+
+/**@typedef {import("../types/methods.d.ts").ExecuteSQLFunction} ExecuteSQLFunction*/
+/**@type {ExecuteSQLFunction}*/
 const executeSQL = ({ db, query, logQuery, emptyResult, processColumns, processRows }) =>
 {
     const prepareStatementWithMarks = sql =>

@@ -1,5 +1,19 @@
-class DefaultOptions
+/**
+ * @typedef {import("../types/index.d.ts").DefaultOptionsPrototype} DefaultOptionsPrototype
+ * @typedef {import("../types/index.d.ts").DefaultOptionsConstructor} DefaultOptionsConstructor
+ * @typedef {import("../types/index.d.ts").DefaultOptionsType} DefaultOptionsType
+*/
+
+/**
+ * @class
+ * @implements {DefaultOptionsPrototype}
+*/
+class DefaultOptionsClass
 {
+    /**
+     * @param {string} route
+     * @this {DefaultOptionsType}
+    */
     constructor(route)
     {
         this._rootPath = route;
@@ -11,6 +25,7 @@ class DefaultOptions
         this._where;
         this._columns;
         this._select = '*';
+        /**@type {"AND"|"OR"}*/
         this._connector = 'AND';
         this._update;
         this._row;
@@ -20,6 +35,7 @@ class DefaultOptions
         this._query;
         this._join;
     };
+    set rootPath(value) { this._rootPath = value };
     set emptyResult(value) { this._emptyResult = value; };
     set route(value) { this._route =  value; };
     set db(value)
@@ -36,6 +52,7 @@ class DefaultOptions
     set where(value) { this._where = value; };
     set columns(value) { this._columns = value; };
     set select(value) { this._select = value; };
+    /**@param {"AND"|"OR"} value*/
     set connector(value) { this._connector = value; };
     set update(value) { this._update = value; };
     set row(value) { this._row = value; };
@@ -45,6 +62,7 @@ class DefaultOptions
     set query(value) { this._query = value };
     set join(value) { this._join = value };
     
+    get rootPath(){ return this._rootPath };
     get emptyResult() { return this._emptyResult; };
     get route() { return this._route; };
     get db() { return this._db; };
@@ -53,6 +71,7 @@ class DefaultOptions
     get where() { return this._where; };
     get columns() { return this._columns; };
     get select() { return this._select; };
+    /**@returns {object} */
     get connector() { return this._connector; };
     get update() { return this._update; };
     get row() { return this._row; };
@@ -70,6 +89,9 @@ class DefaultOptions
         ]
         .forEach(property => { if (options.hasOwnProperty(property)) this[ property ] = options[ property ] });
     }
-
 };
+
+/**@type {DefaultOptionsConstructor}*/
+const DefaultOptions = DefaultOptionsClass;
+
 module.exports = DefaultOptions;
