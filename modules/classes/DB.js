@@ -1,9 +1,9 @@
 /**
- * @typedef {import("../types/db.d.ts").DBConstructor} DBConstructor
- * @typedef {import("../types/db.d.ts").DBPrototype} DBPrototype
- * @typedef {import("../types/db.d.ts").DBType} DBType
- * @typedef {import("../types/db.d.ts").dbConstructorFunc} dbConstructorFunc
- * @typedef {import("../types/db.d.ts").dbAddOperationMethod} dbAddOperationMethod
+ * @typedef {import("../../lib/types/db.js").DBConstructor} DBConstructor
+ * @typedef {import("../../lib/types/db.js").DBPrototype} DBPrototype
+ * @typedef {import("../../lib/types/db.js").DBType} DBType
+ * @typedef {import("../../lib/types/db.js").dbConstructorFunc} dbConstructorFunc
+ * @typedef {import("../../lib/types/db.js").dbAddOperationMethod} dbAddOperationMethod
 */
 
 /**

@@ -1,0 +1,1 @@
+export type ConsoleQuery = (str: string, params?: Object<string, any>) => void;

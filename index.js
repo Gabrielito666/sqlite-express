@@ -11,20 +11,20 @@ const countFunc = require("./modules/methods/count");
 const executeSQLFunc = require("./modules/methods/executeSQL");
 
 /**
- * @typedef {import("./modules/types/sqlite-express.d.ts").GetDbMethod} GetDbMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").CountMethod} CountMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").CreateDbMethod} CreateDbMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").CreateTableMethod} CreateTableMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").DeleteMethod} DeleteMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").ExecuteSQLMethod} ExecuteSQLMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").ExistMethod} ExistMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").InsertMethod} InsertMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").SelectMethod} SelectMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").SqliteExpressConstructorFunction} SqliteExpressConstructorFunction
- * @typedef {import("./modules/types/sqlite-express.d.ts").UpdateMethod} UpdateMethod
- * @typedef {import("./modules/types/sqlite-express.d.ts").SqliteExpressConstructor} SqliteExpressConstructor
- * @typedef {import("./modules/types/sqlite-express.d.ts").SqliteExpressPrototype} SqliteExpressPrototype
- * @typedef {import("./modules/types/sqlite-express.d.ts").SqliteExpressType} SqliteExpressType
+ * @typedef {import("./lib/types/sqlite-express").GetDbMethod} GetDbMethod
+ * @typedef {import("./lib/types/sqlite-express").CountMethod} CountMethod
+ * @typedef {import("./lib/types/sqlite-express").CreateDbMethod} CreateDbMethod
+ * @typedef {import("./lib/types/sqlite-express").CreateTableMethod} CreateTableMethod
+ * @typedef {import("./lib/types/sqlite-express").DeleteMethod} DeleteMethod
+ * @typedef {import("./lib/types/sqlite-express").ExecuteSQLMethod} ExecuteSQLMethod
+ * @typedef {import("./lib/types/sqlite-express").ExistMethod} ExistMethod
+ * @typedef {import("./lib/types/sqlite-express").InsertMethod} InsertMethod
+ * @typedef {import("./lib/types/sqlite-express").SelectMethod} SelectMethod
+ * @typedef {import("./lib/types/sqlite-express").SqliteExpressConstructorFunction} SqliteExpressConstructorFunction
+ * @typedef {import("./lib/types/sqlite-express").UpdateMethod} UpdateMethod
+ * @typedef {import("./lib/types/sqlite-express").SqliteExpressConstructor} SqliteExpressConstructor
+ * @typedef {import("./lib/types/sqlite-express").SqliteExpressPrototype} SqliteExpressPrototype
+ * @typedef {import("./lib/types/sqlite-express").SqliteExpressType} SqliteExpressType
 */
 
 /**

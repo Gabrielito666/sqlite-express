@@ -1,1 +1,0 @@
-module.exports = x => Array(x).fill('?').join(', ');
