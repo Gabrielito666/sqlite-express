@@ -2,9 +2,10 @@ export * from "./default-options";
 export * from "./db";
 export * from "./sqlite-express";
 export * from "./methods";
-export * from "../get-where-statement";
-export * from "../count-function";
-export * from "../console-query";
-export * from "../delete-function";
-export * from "../exist-function";
+export * from "../tool-get-where-statement";
+export * from "../function-count";
+export * from "../tool-console-query";
+export * from "../function-delete";
+export * from "../function-exist";
 export * from "./expected-result";
+export * from "../class-options"

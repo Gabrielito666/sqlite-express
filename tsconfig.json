@@ -19,7 +19,6 @@
     "noUnusedParameters": true,
     "noImplicitThis": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
     "allowJs": true,
     "checkJs": true,
     "resolveJsonModule": true,
