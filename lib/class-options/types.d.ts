@@ -58,7 +58,13 @@ export type ParametersParam = {[key: string]: number|string|boolean|Object|null}
 
 type TypeParam = "select"|"insert"|"update"|"delete"|"any"|"create-table";
 
-export interface SelectParams
+export interface CreateDbParams
+{
+    route: string;
+    logQuery: boolean;
+}
+
+export interface SelectParams<E extends ExpectedParam>
 {
     db: DBType;
     table: string;
@@ -66,7 +72,7 @@ export interface SelectParams
     where: WhereParam;
     connector: ConnectorParam;
     logQuery: boolean;
-    expected: ExpectedParam;
+    expected: E;
 }
 
 export interface InsertParams
@@ -180,7 +186,7 @@ export interface OptionsType<E extends ExpectedParam, T extends TypeParam>
     type: T;
 
     set(options: OptionsSetParams): void;
-    combination(...options: OptionsType<ExpectedParam, TypeParam>[]): OptionsType<ExpectedParam, TypeParam>;
+    combination(...options: (OptionsType<ExpectedParam, TypeParam>|OptionsSetParams)[]): OptionsType<ExpectedParam, TypeParam>;
 };
 
 export interface OptionsClass
@@ -189,5 +195,5 @@ export interface OptionsClass
 }
 export interface OptionsCombinationMethod
 {
-    (...options: OptionsType[]): OptionsType;
+    (...options: (OptionsType<ExpectedParam, TypeParam>|OptionsSetParams)[]): OptionsType<ExpectedParam, TypeParam>;
 }

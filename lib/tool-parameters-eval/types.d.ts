@@ -1,6 +1,6 @@
-import { CountParams, DeleteParams, ExecuteSQLParams, InsertParams, OptionsParams, SelectParams, UpdateParams, ExistParams, CreateTableParams, ExpectedParam, TypeParam } from "../class-options/types";
-import { OptionsType } from "../class-options/types";
+import { CountParams, DeleteParams, ExecuteSQLParams, InsertParams, SelectParams, UpdateParams, ExistParams, CreateTableParams, ExpectedParam, TypeParam, CreateDbParams, OptionsType } from "../class-options/types";
 
+export type ParametersEvalCreateDbFunction = (options: OptionsType<ExpectedParam, TypeParam>) => CreateDbParams;
 export type ParametersEvalSelectFunction = (options: OptionsType<ExpectedParam, TypeParam>) => SelectParams;
 export type ParametersEvalInsertFunction = (options: OptionsType<ExpectedParam, TypeParam>) => InsertParams;
 export type ParametersEvalUpdateFunction = (options: OptionsType<ExpectedParam, TypeParam>) => UpdateParams;
