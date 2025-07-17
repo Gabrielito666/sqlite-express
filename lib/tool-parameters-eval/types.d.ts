@@ -1,11 +1,20 @@
-import { CountParams, DeleteParams, ExecuteSQLParams, InsertParams, SelectParams, UpdateParams, ExistParams, CreateTableParams, ExpectedParam, TypeParam, CreateDbParams, OptionsType } from "../class-options/types";
+import { StrictArgs } from "../types/args";
+import { OptionsType } from "../class-options/types";
 
-export type ParametersEvalCreateDbFunction = (options: OptionsType<ExpectedParam, TypeParam>) => CreateDbParams;
-export type ParametersEvalSelectFunction = (options: OptionsType<ExpectedParam, TypeParam>) => SelectParams;
-export type ParametersEvalInsertFunction = (options: OptionsType<ExpectedParam, TypeParam>) => InsertParams;
-export type ParametersEvalUpdateFunction = (options: OptionsType<ExpectedParam, TypeParam>) => UpdateParams;
-export type ParametersEvalDeleteFunction = (options: OptionsType<ExpectedParam, TypeParam>) => DeleteParams;
-export type ParametersEvalExistFunction = (options: OptionsType<ExpectedParam, TypeParam>) => ExistParams;
-export type ParametersEvalCountFunction = (options: OptionsType<ExpectedParam, TypeParam>) => CountParams;
-export type ParametersEvalExecuteSQLFunction = (options: OptionsType<ExpectedParam, TypeParam>) => ExecuteSQLParams;
-export type ParametersEvalCreateTableFunction = (options: OptionsType<ExpectedParam, TypeParam>) => CreateTableParams;
+type OpDefault = OptionsType<Params["expected"], Params["type"]>;
+
+export interface ParametersEval
+{
+    createDb: (options: OpDefault) => StrictArgs["createDb"];
+    select: (options: OpDefault) => StrictArgs["select"];
+    insert: (options: OpDefault) => StrictArgs["insert"];
+    update: (options: OpDefault) => StrictArgs["update"];
+    delete: (options: OpDefault) => StrictArgs["delete"];
+    exist: (options: OpDefault) => StrictArgs["exist"];
+    count: (options: OpDefault) => StrictArgs["count"];
+    executeSQL: (options: OpDefault) => StrictArgs["executeSQL"];
+    createTable: (options: OpDefault) => StrictArgs["createTable"];
+    beginTransaction: (options: OpDefault) => StrictArgs["beginTransaction"];
+    rollback: (options: OpDefault) => StrictArgs["rollback"];
+    commit: (options: OpDefault) => StrictArgs["commit"];
+}

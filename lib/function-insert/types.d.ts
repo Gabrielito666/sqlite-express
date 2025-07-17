@@ -1,4 +1,4 @@
-import { OptionsType, ExpectedParam, TypeParam } from "../class-options/types";
+import { Returns } from "lib/types/returns";
+import { OptionsType } from "../class-options/types";
 
-export type InsertFunction = (options:OptionsType<ExpectedParam, TypeParam>)
-=> Promise<number>;
+export type InsertFunction = (options:OptionsType) => Returns["insert"];

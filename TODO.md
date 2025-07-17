@@ -1,0 +1,4 @@
+- declareSQL method falta
+- Podría quizas incluir zod a select, executeSQL, declareSQL, insert, update y createTable?
+- WHERE con operator IN debe tener value array
+- WHERE con operator IS NULL y IS NOT NULL debe tener value undefined

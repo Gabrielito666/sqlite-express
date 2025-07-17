@@ -1,5 +1,4 @@
-import { Database } from "sqlite3";
-import { Where, Connector } from "../types";
+import { Returns } from "lib/types/returns";
+import { OptionsType } from "../class-options/types";
 
-export type DeleteFunction = (options:OptionsType<ExpectedParam, TypeParam>)
-=> Promise<number>;
+export type DeleteFunction = (options:OptionsType) => Returns["delete"]

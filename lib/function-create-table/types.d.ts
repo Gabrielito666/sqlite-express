@@ -1,4 +1,4 @@
-import { OptionsType, ExpectedParam, TypeParam } from "../class-options/types";
+import { Returns } from "lib/types/returns";
+import { OptionsType } from "../class-options/types";
 
-export type CreateTableFunction = (options:OptionsType<ExpectedParam, TypeParam>)
-=> Promise<void>;
+export type CreateTableFunction = (options:OptionsType) => Returns["createTable"];

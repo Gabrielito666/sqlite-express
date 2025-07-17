@@ -1,4 +1,4 @@
-import { OptionsType, ExpectedParam, TypeParam } from "../class-options/types";
+import { OptionsType } from "../class-options/types";
+import { Returns } from "../types/returns";
 
-export type CountFunction = (options:OptionsType<ExpectedParam, TypeParam>)
-=> Promise<number>;
+export type CountFunction = (options:OptionsType) => Returns["count"];

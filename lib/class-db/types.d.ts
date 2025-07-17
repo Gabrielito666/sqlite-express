@@ -1,79 +1,37 @@
+import { OptionalArgs } from "../types/args";
+import { Params } from "../types/params";
 import { Database } from "sqlite3";
-import { WaitingListType } from "../class-waiting-list/types";
-import { OptionsType, CreateTableParams, SelectParams, InsertParams, UpdateParams, DeleteParams, ExistParams, CountParams, ExecuteSQLParams, ExpectedParam, TypeParam } from "../class-options/types";
-import { CreateTableFunction } from "../function-create-table/types";
-import { SelectFunction } from "../function-select/types";
-import { InsertFunction } from "../function-insert/types";
-import { UpdateFunction } from "../function-update/types";
-import { DeleteFunction } from "../function-delete/types";
-import { ExistFunction } from "../function-exist/types";
-import { CountFunction } from "../function-count/types";
-import { ExecuteSQLFunction } from "../function-execute-sql/types";
-import { ExpectedResult } from "../class-options/types";
+import { WaitingListType } from "../class-operations-list/types";
+import { OptionsType } from "../class-options/types";
+import { SqliteExpressType } from "../types/sqlite-express";
+import { Returns } from "lib/types/returns";
+import { TransactionType } from "lib/class-transaction/types";
+import { TransactionsListType } from "lib/class-transactions-list/types";
 
-export interface DBType
+export interface DBType<
+    E extends Params["expected"] = Params["expected"],
+    T extends Params["type"] = Params["type"]
+>
 {
     sqliteDb:Database;
-    waitingList:WaitingListType;
-    defaultOptions:OptionsType<ExpectedParam, TypeParam>;
+    transactionsList:TransactionsListType;
+    defaultOptions:OptionsType;
 
-    createTable(...params:Parameters<DBCreateTableMethod>):ReturnType<DBCreateTableMethod>;
-    select<E extends ExpectedParam>(...params:Parameters<DBSelectMethod<E>>):ReturnType<DBSelectMethod<E>>;
-    insert(...params:Parameters<DBInsertMethod>):ReturnType<DBInsertMethod>;
-    update(...params:Parameters<DBUpdateMethod>):ReturnType<DBUpdateMethod>;
-    delete(...params:Parameters<DBDeleteMethod>):ReturnType<DBDeleteMethod>;
-    exist(...params:Parameters<DBExistMethod>):ReturnType<DBExistMethod>;
-    count(...params:Parameters<DBCountMethod>):ReturnType<DBCountMethod>;
-    executeSQL<E extends ExpectedParam, T extends TypeParam>(...params:Parameters<DBExecuteSQLMethod<E, T>>):ReturnType<DBExecuteSQLMethod<E, T>>;
+    createTransaction():TransactionType<E, T>;
+    createTable(args?:Omit<OptionalArgs["createTable"], "db">):Returns["createTable"];
+    select(args?:Omit<OptionalArgs<E>["select"], "db">):Retunrs<E>["select"];
+    insert(args?:Omit<OptionalArgs["insert"], "db">):Returns["insert"];
+    update(args?:Omit<OptionalArgs["update"], "db">):Returns["update"];
+    delete(args?:Omit<OptionalArgs["delete"], "db">):Returns["delete"];
+    exist(args?:Omit<OptionalArgs["exist"], "db">):Returns["exist"];
+    count(args?:Omit<OptionalArgs["count"], "db">):Returns["count"];
+    executeSQL(args?:Omit<OptionalArgs<E, T>["executeSQL"], "db">):Returns<E, T>["executeSQL"];
+    beginTransaction(args?:Omit<OptionalArgs["beginTransaction"], "db">):Returns["beginTransaction"];
+    rollback(args?:Omit<OptionalArgs["rollback"], "db">):Returns["rollback"];
+    commit(args?:Omit<OptionalArgs["commit"], "db">):Returns["commit"];
 }
 
 export interface DBClass
 {
-    new(context:SqliteExpressType, options:OptionsType<ExpectedParam, TypeParam>):DBType;
+    new(context:SqliteExpressType, options:OptionsType):DBType;
 };
-
-export interface DBConstructorMethod
-{
-    (context:SqliteExpressType, options:OptionsType<ExpectedParam, TypeParam>):DBType;
-}
-
-export interface DBCreateTableMethod
-{
-    (params:Partial<CreateTableParams>):Promise<void>;
-}
-export interface DBSelectMethod<E extends ExpectedParam>
-{
-    (params:Partial<SelectParams<E>>): Promise<ExpectedResult<E>>;
-}
-export interface DBInsertMethod
-{
-    (params:Partial<InsertParams>):Promise<number>;
-}
-export interface DBUpdateMethod
-{
-    (params:Partial<UpdateParams>):Promise<number>;
-}
-export interface DBDeleteMethod
-{
-    (params:Partial<DeleteParams>):Promise<number>;
-}
-export interface DBExistMethod
-{
-    (params:Partial<ExistParams>):Promise<boolean>;
-}
-export interface DBCountMethod
-{
-    (params:Partial<CountParams>):Promise<number>;
-}
-export interface DBExecuteSQLMethod<E extends ExpectedParam, T extends TypeParam>
-{
-    (params:Partial<ExecuteSQLParams<E, T>>):Promise<
-    T extends "select" ? ExpectedResult<E> : 
-    T extends "insert" ? number :
-    T extends "update" ? number :
-    T extends "delete" ? number :
-    T extends "create" ? void :
-    T extends "any" ? ExpectedResult<E>|number :
-    never
->;
-}
