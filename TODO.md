@@ -1,4 +1,6 @@
-- declareSQL method falta
-- Podría quizas incluir zod a select, executeSQL, declareSQL, insert, update y createTable?
-- WHERE con operator IN debe tener value array
-- WHERE con operator IS NULL y IS NOT NULL debe tener value undefined
+documentar bien (DeclareSQL no admite ?--?)
+ya no key en database
+yano join
+ya no processRows ProcessColumns ni emptyResult
+
+bla bla bla

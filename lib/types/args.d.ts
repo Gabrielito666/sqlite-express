@@ -91,6 +91,14 @@ T extends Params["type"] = Params["type"]
         db: Params["db"];
         logQuery: Params["logQuery"];
     };
+    declareSQL:
+    {
+        db: Params["db"];
+        logQuery: Params["logQuery"];
+        query: Params["query"];
+        type: T;
+        expected: E;
+    };
 }
 
 export interface OptionalArgs<
@@ -110,4 +118,5 @@ T extends Params["type"] = Params["type"]
     beginTransaction: Partial<StrictArgs["beginTransaction"]>;
     rollback: Partial<StrictArgs["rollback"]>;
     commit: Partial<StrictArgs["commit"]>;
+    declareSQL: Partial<StrictArgs<E, T>["declareSQL"]>;
 }

@@ -29,6 +29,7 @@ export interface DBType<
     beginTransaction(args?:Omit<OptionalArgs["beginTransaction"], "db">):Returns["beginTransaction"];
     rollback(args?:Omit<OptionalArgs["rollback"], "db">):Returns["rollback"];
     commit(args?:Omit<OptionalArgs["commit"], "db">):Returns["commit"];
+    declareSQL(args?:Omit<OptionalArgs<E, T>["declareSQL"], "db">):Returns<E, T>["declareSQL"];
 }
 
 export interface DBClass

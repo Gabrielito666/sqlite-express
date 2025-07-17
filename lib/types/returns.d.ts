@@ -44,4 +44,5 @@ export interface Returns<
     beginTransaction: Promise<true>;
     rollback: Promise<true>;
     commit: Promise<true>;
+    declareSQL: Promise<(params: Params["parameters"]) => ExecuteSQLReturns<E, T>>;
 }

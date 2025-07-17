@@ -1,9 +1,11 @@
+import { TableType } from "lib/class-table";
 import { DBType } from "../class-db/types";
 
 export type ColumnName = Exclude<string, Connector>;
-export type ColumnValue = string | number | string[] | number[] | null;
+export type ColumnValue = string | number | string[] | number[] | null |"NULL";
 export type ConnectorParam = "AND" | "OR";
-export type ComparisonOperator = "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IN" | "NOT IN" | "IS" | "IS NOT" | "IS NULL" | "IS NOT NULL";
+export type ComparisonOperator = "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IS" | "IS NOT";
+type ListOperator = "IN" | "NOT IN";
 
 export interface ConditionDefaultOperator
 {
@@ -12,7 +14,7 @@ export interface ConditionDefaultOperator
 	[key: ColumnName]: ColumnValue;
 }
 
-export interface ConditionComplete
+export type ConditionComplete =
 {
 	AND?: never;
 	OR?: never;
@@ -20,7 +22,14 @@ export interface ConditionComplete
 		value: ColumnValue;
 		operator: ComparisonOperator;
 	}
-}
+}|{
+	AND?: never;
+	OR?: never;
+	[key: ColumnName]: {
+		value: ColumnValue[];
+		operator: ListOperator;
+	}
+};
 
 export type Condition = ConditionDefaultOperator | ConditionComplete | Record<string, ColumnValue | { value: ColumnValue; operator: ComparisonOperator }>;
 
@@ -86,19 +95,19 @@ type RowParam =
 
 export interface Params
 {
-    rootPath: string;
-    route: string;
-    db: DBType;
-    table: string;
-    where: WhereParam;
-    columns: { [key: string]: SQLType };
-    select: string|string[]|{[key:string]: { as:string }};
-    connector: "AND"|"OR";
-    update: {[key: string]: (string|number|boolean|(<T>(value:T) => T)|object)};
-    row: {[key:string]:RowParam};
-    logQuery: boolean;
-    query: string;
-    expected: "celd"|"row"|"column"|"rows";
-    parameters: {[key: string]: RowParam};
-    type: "select"|"insert"|"update"|"delete"|"any"|"create-table";
+  rootPath: string;
+  route: string;
+  db: DBType;
+  table: string|TableType;
+  where: WhereParam;
+  columns: { [key: string]: SQLType };
+  select: string|string[]|{[key:string]: { as:string }};
+  connector: ConnectorParam;
+  update: {[key: string]: (string|number|boolean|(<T>(value:T) => T)|object)};
+  row: {[key:string]:RowParam};
+  logQuery: boolean;
+  query: string;
+  expected: "celd"|"row"|"column"|"rows";
+  parameters: {[key: string]: RowParam};
+  type: "select"|"insert"|"update"|"delete"|"any"|"create";
 }
