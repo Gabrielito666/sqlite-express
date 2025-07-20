@@ -1,0 +1,1 @@
+export type PathOrSqlFunction = (input: string) => string;
