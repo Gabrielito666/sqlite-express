@@ -1,6 +1,6 @@
 {
   "name": "sqlite-express",
-  "version": "4.0.4",
+  "version": "5.0.0",
   "description": "functions for sqlite3",
   "main": "index.js",
   "types": "./lib/types/index.d.ts",
