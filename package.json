@@ -1,9 +1,8 @@
 {
   "name": "sqlite-express",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "functions for sqlite3",
   "main": "index.js",
-  "types": "./lib/types/index.d.ts",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch"
