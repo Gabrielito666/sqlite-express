@@ -1,8 +1,125 @@
-export * from "./args";
-export * from "./functions";
-export * from "./params";
-export * from "./returns";
-export * from "./sqlite-express";
-export * from "../class-options/types";
-export * from "../class-db/types";
-export * from "../class-db-sqlite-express/types";
+import { DBType } from "lib/class/db";
+import { Params } from "lib/class-options";
+import { TableType } from "lib/class/class-table/types";
+
+
+// SELECT RETURNS
+export type CeldValue = string|number|boolean|null|Buffer;
+export type RowValue = {[key: string]: CeldValue}|null;
+export type ColumnValue = CeldValue[];
+export type RowsValue = RowValue[];
+
+// ARGS
+
+type ColumnName = Exclude<string, ConnectorParam>;
+type WhereConditionCeldValue = string | number | string[] | number[] | null | "NULL";
+type ConnectorParam = "AND" | "OR";
+type ComparisonOperator = "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IS" | "IS NOT";
+type ListOperator = "IN" | "NOT IN";
+
+interface ConditionDefaultOperator
+{
+	AND?: never;
+	OR?: never;
+	[key: ColumnName]: WhereConditionCeldValue;
+}
+
+type ConditionComplete =
+{
+	AND?: never;
+	OR?: never;
+	[key: ColumnName]: {
+		value: WhereConditionCeldValue;
+		operator: ComparisonOperator;
+	}
+}|{
+	AND?: never;
+	OR?: never;
+	[key: ColumnName]: {
+		value: WhereConditionCeldValue[];
+		operator: ListOperator;
+	}
+};
+
+type Condition = ConditionDefaultOperator | ConditionComplete | Record<string, ColumnValue | { value: ColumnValue; operator: ComparisonOperator }>;
+
+type ConditionsList = 
+	| { AND: (Condition | ConditionsList)[]; OR?: never }
+	| { OR: (Condition | ConditionsList)[]; AND?: never };
+
+type WhereParam = | Condition | ConditionsList;
+
+type SQLType =
+  | "INTEGER"
+  | "INTEGER PRIMARY KEY"
+  | "INTEGER PRIMARY KEY AUTOINCREMENT"
+  | "INTEGER NOT NULL"
+  | "INTEGER NOT NULL UNIQUE"
+  | "INTEGER UNIQUE"
+  | "INTEGER DEFAULT 0"
+  | "INTEGER NOT NULL DEFAULT 0"
+  | "INTEGER DEFAULT 1"
+  | "INTEGER NOT NULL DEFAULT 1"
+  | "TEXT"
+  | "TEXT NOT NULL"
+  | "TEXT UNIQUE"
+  | "TEXT NOT NULL UNIQUE"
+  | "TEXT DEFAULT ''"
+  | "TEXT NOT NULL DEFAULT ''"
+  | "TEXT COLLATE NOCASE"
+  | "TEXT DEFAULT 'N/A'"
+  | "TEXT NOT NULL DEFAULT 'N/A'"
+  | "REAL"
+  | "REAL DEFAULT 0.0"
+  | "REAL NOT NULL"
+  | "REAL NOT NULL DEFAULT 0.0"
+  | "BOOLEAN"
+  | "BOOLEAN DEFAULT 0"
+  | "BOOLEAN DEFAULT 1"
+  | "BOOLEAN NOT NULL DEFAULT 0"
+  | "BOOLEAN NOT NULL DEFAULT 1"
+  | "NUMERIC"
+  | "NUMERIC DEFAULT 0"
+  | "NUMERIC NOT NULL DEFAULT 0"
+  | "DATE"
+  | "DATE DEFAULT CURRENT_DATE"
+  | "DATE NOT NULL DEFAULT CURRENT_DATE"
+  | "DATETIME"
+  | "DATETIME DEFAULT CURRENT_TIMESTAMP"
+  | "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+  | "BLOB"
+  | "BLOB NOT NULL"
+  | "BLOB DEFAULT X''"
+  | "INTEGER REFERENCES otra_tabla"
+  | "TEXT REFERENCES otra_tabla"
+  | "INTEGER NOT NULL REFERENCES otra_tabla"
+  | "TEXT NOT NULL REFERENCES otra_tabla";
+
+export type Parameters = {[key: string]: CeldValue}|CeldValue[];
+export type Route = string;
+export type RootPath = string;
+export type TableName = string;
+export type Where = WhereParam;
+export type Columns = { [key: string]: SQLType };
+export type Select = string|string[]|{[key:string]: { as:string }};
+export type Connector = ConnectorParam;
+export type Update = {[key: string]: (string|number|boolean|(<T>(value:T) => T)|object)};
+export type Row = {[key:string]:RowParam};
+export type LogQuery = boolean;
+export type Query = string;
+export type Expected = "celd"|"row"|"column"|"rows";
+export type Parameters = {[key: string]: CeldValue}|CeldValue[];
+
+export type RootPathArg = {rootPath: RootPath};
+export type RouteArg = {route: Route};
+export type TableNameArg = {tableName: TableName};
+export type TableArg = {table: TableType};
+export type WhereArg = {where?: Where};
+export type ColumnsArg = {columns: Columns};
+export type SelectArg = {select: Select};
+export type ConnectorArg = {connector?: Connector};
+export type UpdateArg = {update: Update};
+export type RowArg = {row: Row};
+export type LogQueryArg = {logQuery?: LogQuery};
+export type QueryArg = {query: Query};
+export type ParametersArg = {parameters?: Parameters};
