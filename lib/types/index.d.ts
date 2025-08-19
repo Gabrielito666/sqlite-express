@@ -1,7 +1,9 @@
-import { DBType } from "lib/class/db";
+import { DB } from "lib/class/db";
 import { Params } from "lib/class-options";
 import { TableType } from "lib/class/class-table/types";
-
+import { Scope } from "lib/class/scopes-queue";
+import { Table } from "lib/class/table";
+import { SqliteExpress } from "lib/class/sqlite-express";
 
 // SELECT RETURNS
 export type CeldValue = string|number|boolean|null|Buffer;
@@ -95,9 +97,13 @@ type SQLType =
   | "INTEGER NOT NULL REFERENCES otra_tabla"
   | "TEXT NOT NULL REFERENCES otra_tabla";
 
+export type DB = typeof DB;
+export type SqliteExpress = typeof SqliteExpress;
+export type Table = typeof Table;
+export type Scope = typeof Scope;
+
 export type Parameters = {[key: string]: CeldValue}|CeldValue[];
 export type Route = string;
-export type RootPath = string;
 export type TableName = string;
 export type Where = WhereParam;
 export type Columns = { [key: string]: SQLType };
@@ -107,10 +113,9 @@ export type Update = {[key: string]: (string|number|boolean|(<T>(value:T) => T)|
 export type Row = {[key:string]:RowParam};
 export type LogQuery = boolean;
 export type Query = string;
-export type Expected = "celd"|"row"|"column"|"rows";
 export type Parameters = {[key: string]: CeldValue}|CeldValue[];
 
-export type RootPathArg = {rootPath: RootPath};
+export type DBArg = {db: DB};
 export type RouteArg = {route: Route};
 export type TableNameArg = {tableName: TableName};
 export type TableArg = {table: TableType};
@@ -123,3 +128,4 @@ export type RowArg = {row: Row};
 export type LogQueryArg = {logQuery?: LogQuery};
 export type QueryArg = {query: Query};
 export type ParametersArg = {parameters?: Parameters};
+export type ScopeArg = {scope?: Scope};

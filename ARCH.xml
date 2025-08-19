@@ -2,31 +2,28 @@
     <lib>
         <functions>
             <create-table/>
-	    <insert/>
-	    <select/>
-	    <update/>
-	    <delete/>
-	    <execute-sql/>
-	    <declare-sql/>
-	    <begin-transaction/>
-	    <begin-inmediate/>
-	    <commit/>
-	    <rollback/>
+			<insert/>
+			<select/>
+			<update/>
+			<delete/>
+			<execute-sql/>
+			<declare-sql/>
+			<begin/>
+			<commit/>
+			<rollback/>
     	</functions>
-	<class>
-	    <sqlite-express/>
-	    <db/>
-	    <table/>
-	    <sql-table-methods/>
-	    <sql-all-methods>
-	</class>
-	<tools>
-            <console-query/>
-	    <get-where-statement/>
-	    <normalize-parameters/>
-	    <path-or-sql/>
-	    <compose-method/>
-	</tools>
-		
+		<class>
+			<sqlite-express/>
+			<db/>
+			<table/>
+			<scopes-queue/>
+		</class>
+		<tools>
+			<console-query/>
+			<get-where-statement/>
+			<normalize-parameters/>
+			<path-or-sql/>
+			<compose-method/>
+		</tools>
     </lib>
 </sqlite-express>

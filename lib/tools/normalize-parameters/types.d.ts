@@ -1,2 +1,4 @@
+import { Parameters } from "lib/types";
+
 export type NormalizeParametersFunction =
-(parameters: Record<string, any>) => ProxyHandler<Record<string, any>>;
+(parameters?: Parameters) => Parameters;
