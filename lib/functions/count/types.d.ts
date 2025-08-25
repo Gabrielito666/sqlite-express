@@ -1,4 +1,4 @@
-import { ConnectorArg, LogQueryArg, TableArg, WhereArg } from "lib/types";
+import { LogQueryArg, TableArg, WhereArg } from "../../types";
 import { Database } from "sqlite3";
 
-export type CountFunction = (sqliteDb: Database, args: TableArg & WhereArg & ConnectorArg & LogQueryArg) => Promise<number>;
+export type CountFunction = (sqliteDb: Database, args: (TableArg & WhereArg & LogQueryArg)) => Promise<number>;

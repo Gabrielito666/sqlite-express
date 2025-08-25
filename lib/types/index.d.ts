@@ -1,55 +1,48 @@
 import { DB } from "lib/class/db";
-import { Params } from "lib/class-options";
 import { TableType } from "lib/class/class-table/types";
 import { Scope } from "lib/class/scopes-queue";
 import { Table } from "lib/class/table";
 import { SqliteExpress } from "lib/class/sqlite-express";
 
 // SELECT RETURNS
+
 export type CeldValue = string|number|boolean|null|Buffer;
 export type RowValue = {[key: string]: CeldValue}|null;
 export type ColumnValue = CeldValue[];
 export type RowsValue = RowValue[];
 
-// ARGS
-
-type ColumnName = Exclude<string, ConnectorParam>;
-type WhereConditionCeldValue = string | number | string[] | number[] | null | "NULL";
-type ConnectorParam = "AND" | "OR";
 type ComparisonOperator = "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IS" | "IS NOT";
 type ListOperator = "IN" | "NOT IN";
 
-interface ConditionDefaultOperator
+type SentenceEqualOperatorCell =
 {
-	AND?: never;
-	OR?: never;
-	[key: ColumnName]: WhereConditionCeldValue;
+  [K in string]: CeldValue;
+  AND?: never;
+  OR?: never;
 }
 
-type ConditionComplete =
-{
-	AND?: never;
-	OR?: never;
-	[key: ColumnName]: {
-		value: WhereConditionCeldValue;
-		operator: ComparisonOperator;
-	}
-}|{
-	AND?: never;
-	OR?: never;
-	[key: ColumnName]: {
-		value: WhereConditionCeldValue[];
-		operator: ListOperator;
-	}
+type SentenceComparisonOperatorCell = [string, ComparisonOperator, CeldValue];
+
+type SentenceListOperatorCell = [string, ListOperator, CeldValue[]];
+
+type SentenceCell =
+  | SentenceEqualOperatorCell
+  | SentenceComparisonOperatorCell
+  | SentenceListOperatorCell;
+
+type LogicalAND = {
+  AND: Where[];
+  OR?: never;
+};
+type LogicalOR  = {
+  OR: Where[];
+  AND?: never;
 };
 
-type Condition = ConditionDefaultOperator | ConditionComplete | Record<string, ColumnValue | { value: ColumnValue; operator: ComparisonOperator }>;
+type LogicalConditionsUnion = LogicalAND | LogicalOR;
 
-type ConditionsList = 
-	| { AND: (Condition | ConditionsList)[]; OR?: never }
-	| { OR: (Condition | ConditionsList)[]; AND?: never };
-
-type WhereParam = | Condition | ConditionsList;
+// --- Where (recursivo) ---
+export type Where = SentenceCell | LogicalConditionsUnion;
 
 type SQLType =
   | "INTEGER"
@@ -108,7 +101,6 @@ export type TableName = string;
 export type Where = WhereParam;
 export type Columns = { [key: string]: SQLType };
 export type Select = string|string[]|{[key:string]: { as:string }};
-export type Connector = ConnectorParam;
 export type Update = {[key: string]: (string|number|boolean|(<T>(value:T) => T)|object)};
 export type Row = {[key:string]:RowParam};
 export type LogQuery = boolean;
@@ -122,7 +114,6 @@ export type TableArg = {table: TableType};
 export type WhereArg = {where?: Where};
 export type ColumnsArg = {columns: Columns};
 export type SelectArg = {select: Select};
-export type ConnectorArg = {connector?: Connector};
 export type UpdateArg = {update: Update};
 export type RowArg = {row: Row};
 export type LogQueryArg = {logQuery?: LogQuery};

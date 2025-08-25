@@ -12,7 +12,7 @@ import { CreateTableFunction } from "lib/functions/create-table";
 import { SelectFunction } from "lib/functions/select";
 import { ExecuteSQLFunction } from "lib/functions/execute-sql";
 import { DeclareSQLFunction } from "lib/functions/declare-sql";
-import { BeginFunction } from "lib/functions/begin-transaction";
+import { BeginFunction } from "lib/functions/begin";
 import { RollbackFunction } from "lib/functions/rollback";
 import { CommitFunction } from "lib/functions/commit";
 import { CountFunction } from "lib/functions/count";

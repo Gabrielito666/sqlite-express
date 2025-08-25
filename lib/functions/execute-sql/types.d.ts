@@ -1,4 +1,4 @@
-import { CeldValue, ColumnValue, RowValue, RowsValue, LogQueryArg, ParametersArg, QueryArg, Parameters } from "lib/types";
+import { CeldValue, ColumnValue, RowValue, RowsValue, LogQueryArg, ParametersArg, QueryArg, Parameters } from "../../types";
 import { Database, RunResult } from "sqlite3";
 
 export interface ExecuteSQLSentence
