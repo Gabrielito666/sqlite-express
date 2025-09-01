@@ -23,3 +23,15 @@ union lógica de sentencias:
 ya no hay connector
 
 # QUEDE EN EL TESD DE EXIST
+
+6) Pensar en si implementar un mapeador de querys de un directorio onda
+
+```js
+const dir = await sqliteExpress.mapDir("./the/path");
+
+const stmt1 = dir.getStatement("create-users-table.sql");
+const stmt2 = dir.getStatement("insert-user.sql");
+const stmt3 = dir.getStatement("selects/select-user.sql");
+```
+
+## Documentar claramente que el insert ya no parsea nada de lo que le pases.

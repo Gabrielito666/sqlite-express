@@ -27,8 +27,10 @@ export interface ScopesQueue
 {
     communityScope:Scope;
     isClosed:boolean;
-    listUserScopes:Scope[];
+    isRunning:boolean;
+    listScopes:Scope[];
     newScope():Scope;
+    run():void;
     close():Promise<void>;
 }
 
