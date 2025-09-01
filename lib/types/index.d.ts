@@ -1,8 +1,25 @@
-import { DB } from "lib/class/db";
-import { TableType } from "lib/class/class-table/types";
-import { Scope } from "lib/class/scopes-queue";
-import { Table } from "lib/class/table";
-import { SqliteExpress } from "lib/class/sqlite-express";
+import Table from "../class/table";
+import DB from "../class/db";
+import { Scope } from "../class/scopes-queue";
+import SqliteExpress from "../class/sqlite-express";
+
+export { DB } from "../class/db/types";
+export { Scope } from "../class/scopes-queue/types";
+export { Table } from "../class/table/types";
+export { SqliteExpress } from "../class/sqlite-express/types";
+
+export { BeginFunction } from "../functions/begin"
+export { CommitFunction } from "../functions/commit";
+export { CountFunction } from "../functions/count";
+export { CreateTableFunction } from "../functions/create-table";
+export { DeclareSQLFunction } from "../functions/declare-sql";
+export { DeleteFunction } from "../functions/delete";
+export { ExecuteSQLFunction } from "../functions/execute-sql";
+export { ExistFunction } from "../functions/exist";
+export { InsertFunction } from "../functions/insert";
+export { RollbackFunction } from "../functions/rollback";
+export { SelectFunction } from "../functions/select";
+export { UpdateFunction } from "../functions/update";
 
 // SELECT RETURNS
 
@@ -90,18 +107,13 @@ type SQLType =
   | "INTEGER NOT NULL REFERENCES otra_tabla"
   | "TEXT NOT NULL REFERENCES otra_tabla";
 
-export type DB = typeof DB;
-export type SqliteExpress = typeof SqliteExpress;
-export type Table = typeof Table;
-export type Scope = typeof Scope;
-
 export type Parameters = {[key: string]: CeldValue}|CeldValue[];
 export type Route = string;
 export type TableName = string;
 export type Where = WhereParam;
 export type Columns = { [key: string]: SQLType };
 export type Select = string|string[]|{[key:string]: { as:string }};
-export type Update = {[key: string]: (string|number|boolean|(<T>(value:T) => T)|object)};
+export type Update = {[key: string]: (any|((value:any) => any))};
 export type Row = RowValue|RowValue[];
 export type LogQuery = boolean;
 export type Query = string;
@@ -110,7 +122,7 @@ export type Parameters = {[key: string]: CeldValue}|CeldValue[];
 export type DBArg = {db: DB};
 export type RouteArg = {route: Route};
 export type TableNameArg = {tableName: TableName};
-export type TableArg = {table: TableType};
+export type TableArg = {table: Table};
 export type WhereArg = {where?: Where};
 export type ColumnsArg = {columns: Columns};
 export type SelectArg = {select?: Select};

@@ -1,4 +1,4 @@
-import { LogQueryArg } from "lib/types";
+import { LogQueryArg } from "../../types";
 import { Statement } from "sqlite3";
 
 export interface BeginFunction 

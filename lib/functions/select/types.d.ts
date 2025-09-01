@@ -1,4 +1,4 @@
-import { TableArg, SelectArg, WhereArg, LogQueryArg, Parameters, RowValue, RowsValue, CeldValue, ColumnValue } from "lib/types";
+import { TableArg, SelectArg, WhereArg, LogQueryArg, Parameters, RowValue, RowsValue, CeldValue, ColumnValue } from "../../types";
 import { Database } from "sqlite3";
 
 export type SelectParam = string|string[]|{[key:string]: { as:string }};
