@@ -35,3 +35,7 @@ const stmt3 = dir.getStatement("selects/select-user.sql");
 ```
 
 ## Documentar claramente que el insert ya no parsea nada de lo que le pases.
+
+## SCOPE ahora teien un metodo close y no end... era más semántico (DOCUMENTALO)
+
+## los statements de declareSQL hay que finalizarlos antes de cerrar la base de datos.

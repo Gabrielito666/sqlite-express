@@ -8,6 +8,7 @@ import {
 
     Table,
 } from "../../types";
+import { ScopesQueue, Scope } from "../scopes-queue/types";
 import { Database } from "sqlite3";
 export interface DB
 {
@@ -92,7 +93,8 @@ export type SimpleMethodWrap = <M extends Function>(method:M) => (
         M extends DeleteFunction ?  Parameters<DB["delete"]>[0] :
         M extends ExistFunction ?  Parameters<DB["exist"]>[0] :
         M extends CountFunction ?  Parameters<DB["count"]>[0] :
-        any
+        M extends CreateTableFunction ? Parameters<DB["createTable"]>[0] :
+        never
     )
 ) => Promise<Awaited<ReturnType<M>>>;
 

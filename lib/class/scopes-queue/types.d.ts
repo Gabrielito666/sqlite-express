@@ -1,26 +1,38 @@
+import { EventEmitter } from "events";
+
 export interface Scope
 {
-    end():void;
+    close():void;
 }
 
-export interface ScopePrivate
+export interface ScopePrivateCamps
 {
-    events:Events;
-    startPromise:Promise<void>;
-    endPromise:Promise<void>;
-    startMethod:() => void;
-    endMethod:() => void;
-    isEnded:boolean;
-    isStarted:boolean;
-    timer:NodeJS.Timeout|null;
+    isOpen: boolean;
+    isMyTurn: boolean;
+
+    events: EventEmitter;
+
+    operationsList: Promise<any>[];
+
+    myTurnStart: Promise<void>;
+    userClose: Promise<void>;
+    end: Promise<void>;
+
+    addOperation<M extends Function>(method: M, arg1:Parameters<M>[0], arg2:Parameters<M>[1]):Promise<Awaited<ReturnType<M>>>;
+    myTurnTrigger(): void;
+    userCloseTrigger(): void;
+}
+export interface ScopePrivateCampsClass
+{
+    new(): ScopePrivateCamps;
 }
 
 export interface ScopeClass
 {
     new(): Scope;
-    private:WeakMap<Scope, ScopePrivate>;
-    getPrivate(scope:Scope):ScopePrivate;
-    setPrivate(scope:Scope, pc:ScopePrivate):void;
+    private:WeakMap<Scope, ScopePrivateCamps>;
+    getPrivate(scope:Scope):ScopePrivateCamps;
+    setPrivate(scope:Scope, pc:ScopePrivateCamps):void;
 }
 
 export interface ScopesQueue
@@ -29,6 +41,7 @@ export interface ScopesQueue
     isClosed:boolean;
     isRunning:boolean;
     listScopes:Scope[];
+    getScopeByArgs(scope: Scope|undefined):Scope;
     newScope():Scope;
     run():void;
     close():Promise<void>;
@@ -37,6 +50,5 @@ export interface ScopesQueue
 export interface ScopesQueueClass
 {
     Scope:ScopeClass;
-    awaitScopeStart(scope?:Scope, scopesQueue:ScopesQueue):Promise<void>;
     new():ScopesQueue;
 }
