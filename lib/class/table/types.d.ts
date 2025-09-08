@@ -1,5 +1,5 @@
-import { TableName } from "lib/types";
-import { DB } from "lib/class/db/types";
+import { TableName } from "../../types";
+import { DB } from "../../types";
 
 export interface Table
 {
@@ -15,9 +15,9 @@ export interface Table
     }
     insert(args: Omit<Parameters<DB["insert"]>[0], "table">): ReturnType<DB["insert"]>;
     update(args: Omit<Parameters<DB["update"]>[0], "table">): ReturnType<DB["update"]>;
-    delete(args: Omit<Parameters<DB["delete"]>[0], "table">): ReturnType<DB["delete"]>;
+    delete(args?: Omit<Parameters<DB["delete"]>[0], "table">): ReturnType<DB["delete"]>;
     exist(args: Omit<Parameters<DB["exist"]>[0], "table">): ReturnType<DB["exist"]>;
-    count(args: Omit<Parameters<DB["count"]>[0], "table">): ReturnType<DB["count"]>;
+    count(args?: Omit<Parameters<DB["count"]>[0], "table">): ReturnType<DB["count"]>;
 }
 
 export interface TableClass

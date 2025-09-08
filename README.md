@@ -1,10 +1,10 @@
-### SQLite-Express Version 5
+### SQLite-Express Version 6
 
-sqlite-express is an npm package designed to simplify interaction with sqlite3. It has a promise-based design and is less complex than the original package.
+**sqlite-express** is an npm package designed to simplify interaction with **sqlite3**. It has a **promise-based** design and is less complex than the original package.
 
 #### Installation
 
-To install, run the following command in your terminal:
+Run in your terminal:
 
 ```bash
 npm i sqlite-express
@@ -12,551 +12,460 @@ npm i sqlite-express
 
 #### Initialization
 
-To instantiate the package, start with these lines:
+To instantiate the package, start with:
 
 ```javascript
 const SqliteExpress = require('./index');
 const sqliteExpress = new SqliteExpress();
 ```
 
-With this new instance, you can execute all methods. The SqliteExpress constructor accepts a parameter with the root path you want to use; this will be `process.cwd()` by default.
+With this new instance, you can call all methods. The **SqliteExpress** constructor accepts an optional parameter to control whether the generated SQL queries are printed to the console.
 
 ```javascript
 const SqliteExpress = require('./index');
-const path = require("path");
-const dataDir = path.resolve(process.cwd(), "data");
-const sqliteExpress = new SqliteExpress(dataDir);
+const sqliteExpress = new SqliteExpress({ logQuery: false });
 ```
 
-#### Key Features
-
-1. **Queue System:** The most substantial feature is the integration of a queue to serialize operations. This prevents conflicts with the order of operations and prevents database overload. Thus, you are free to use loops.
-
-2. **Transaction System:** It is an additional queuing system to the previous one that strictly protects the order of a series of interactions with the database. This system protects operations that must be serial despite having simultaneous asynchronous processes like two promises with loops or similar situations.
-
-3. **Default Options Property:** Another feature is the `defaultOptions` property. It eliminates the need to repeatedly pass the same arguments to methods you always use. All properties you use in methods can be set in this object. Below is a list of these properties.
-
-+-----------+-----------+
-| option    | default   |
-+-----------+-----------+
-|route      | undefined |
-+-----------+-----------+
-|db         | undefined |
-+-----------+-----------+
-|table      | undefined |
-+-----------+-----------+
-|where      | undefined |
-+-----------+-----------+
-|columns    | undefined |
-+-----------+-----------+
-|select     | '*'       |
-+-----------+-----------+
-|connector  | "AND"     |
-+-----------+-----------+
-|update     | undefined |
-+-----------+-----------+
-|row        | undefined |
-+-----------+-----------+
-|logQuery   | true      |
-+-----------+-----------+
-|query      | undefined |
-+-----------+-----------+
-|expected   | "rows"    |
-+-----------+-----------+
-|parameters | undefined |
-+-----------+-----------+
-|type       | 'any'     |
-+-----------+-----------+
-
-You can modify these values individually or with the `set` method:
-
-```javascript
-session.defaultOptions.table = 'the_table';
-session.defaultOptions.db = Db;
-// ... and so on
-
-session.defaultOptions.set({
-    table: 'the_table',
-    db: Db,
-    route: './newFolder/my_database.db',
-    logQuery: false
-});
-```
-
-With the set method you don't need to put all default options. Just the ones you want.
+---
 
 ## Types
 
-The data types for each option are defined in the Params type. You can access the type of any option by importing this, e.g.: `Params["where"]`. Anyway, I'm going to make a brief review of the types of each property before talking about methods:
+Data types for each option are defined in the **Params** type. You can access any option’s type by importing it, for example: `Params["where"]`. Even so, here’s a brief overview before we describe the methods:
 
 #### route
-It is a string corresponding to a path in your file system pointing to your database.db, used to create the DB. E.g.: `./data/database.db`.
+A string path on your filesystem pointing to your database file (`.db`). Used to create or open the DB. Example: `./data/database.db`.
 
 #### db
-It is an object that represents the database; it is created with the createDB method of a SqliteExpress instance. I'll explain this object later.
+An object representing the database; it’s created with the `createDB` method of a **SqliteExpress** instance. Explained later in more detail.
 
-#### Table
-It is a string with the name of a table or a Table object. This will be explained in detail later.
+#### tableName
+A string representing the name of a table.
 
-#### Where
-It is an object with many formatting possibilities; it serves to indicate conditions in methods like select, update, count or exist. Its simplest version is:
-```js
-{ [column] : value }
+#### table
+Either a string with the table name or a **Table** object. Detailed later.
+
+#### where
+A flexible object used to specify conditions in methods like `select`, `update`, `count`, or `exist`. Always optional. The simplest form is:
+
+```javascript
+{ [column]: value }
 ```
-In this case it translates to `WHERE [column] = [value]`. It is very simple and useful in most cases. It uses the `=` operator by default. If you want to use another one, you can do:
-```js
-{ [column] : {
-    value: [value],
-    operator: "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IS" | "IS NOT"| "IN" | "NOT IN";
-} }
-```
-this translates to `WHERE [column] [operator] [value]`.
 
-In both the first and second option, value can be an array of values. In which case those statements will be concatenated with an AND, e.g.:
-```js
+This translates to `WHERE [column] = [value]`. The default operator is `=`. If you want another operator, use the tuple form:
+
+```javascript
+[column, operator, value]
+// operator: "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "NOT LIKE" | "IS" | "IS NOT" | "IN" | "NOT IN"
+```
+
+This becomes `WHERE [column] [operator] [value]`.
+
+For `IN` and `NOT IN`, the third element may be an array:
+
+```javascript
+["nombre", "IN", ["John", "David"]];
+// Result: WHERE nombre IN ("John", "David")
+```
+
+Finally, if you want to combine multiple conditions with `AND`/`OR`, or nest conditions, wrap previous patterns inside an array and assign them to an `AND` or `OR` property:
+
+```javascript
 {
-    name: {
-        value: ["John", "David"],
-        operator: "!="
+  OR: [
+    ["nombre", "IN", ["John", "David"]],
+    {
+      AND: [
+        { edad: 18 },
+        { ciudad: "new york" }
+      ]
     }
+  ]
 }
-// RESULT: WHERE name != John AND name != David
-```
-This is especially useful in use cases for the IN and NOT IN operators:
-```js
-{
-    name: {
-        value: ["John", "David"],
-        operator: "IN"
-    }
-}
-// RESULT: WHERE name IN("John", "David")
-```
-Finally, if you want not to depend on the default AND connector or want to nest conditions in a more advanced way, you can wrap a previous statement in an array and assign it to an AND or OR property:
-```js
-{
-    OR : [
-        name: {
-            value: ["John", "David"],
-            operator: "IN"
-        },
-        AND: [
-            { age: 18 },
-            { city: "new york" }
-        ]
-    ]
-}
-// RESULT: WHERE (name IN ("John", "David") OR (age = 18 AND city = "new york" ))
+// Result: WHERE (nombre IN ("John", "David") OR (edad = 18 AND ciudad = "new york"))
 ```
 
 #### columns
-Used to declare tables; it is an object with the property as the column name and the value as the SQLite data type. E.g.:
-```js
-{ name: "TEXT", age: "INTEGER" }
+Used to declare tables; an object whose keys are column names and whose values are SQLite data types. Example:
+
+```javascript
+{ nombre: "TEXT", edad: "INTEGER" }
 ```
 
 #### select
-Used to indicate what you want to select with the select method. It can be a string with the column name or "*", it can be an array with the different columns you want or an object of objects with an as property. E.g.:
-```js
+Indicates what to select with the `select` method (optional). It can be a string with a column name or `"*"`, an array of columns, or an object with `as` aliases:
+
+```javascript
 const selectString = "myColumn";
 const selectArray = ["myColumn", "myOtherColumn"];
 const selectArrayWithAs = {
-    myColumn: { as: "name" } ,
-    myOtherColumn: { as: "age" }
-}
+  myColumn: { as: "nombre" },
+  myOtherColumn: { as: "edad" }
+};
 ```
-#### connector
-Can be "AND" or "OR"; used to have a default initial value in a WHERE clause.
 
 #### update
-It is an object with properties for the column name and the value to update or an updater function.
-```js
-const update1 = { name: "John" };
-const update2 = { age: (prevAge) => (age + 1) };
+An object with columns to update, or an **updater function**:
+
+```javascript
+const update1 = { nombre: "John" };
+const update2 = { edad: (prevEdad) => prevEdad + 1 };
 ```
+
 #### row
-It is an object that represents a row to insert. E.g.:
-```js
-const myRow = { name: "John", age: 18 };
+An object representing a row to insert. Example:
+
+```javascript
+const myRow = { nombre: "John", edad: 18 };
 ```
-It is important that they match the data types expected by the table.
+
+It’s important that the values match the data types expected by the table.
 
 #### logQuery
-Used for a method to print the generated query to the console or not; it is a boolean.
+Boolean flag to print (or not) the generated SQL in the console. Optional and available in all methods. You can also pass it to **SqliteExpress** on instantiation so it propagates as the default for methods that don’t set it explicitly.
 
 #### query
-It is a string with SQL text; some methods allow you to enter queries directly.
-
-#### expected
-Used for the select method to give you one type of response or another. Its values can be "celd", "row", "column" or "rows".
+A string with raw SQL; some methods let you pass SQL directly.
 
 #### parameters
-It is an object that in SQL queries allows you to send parameters. If the query includes @name, your parameters object would look like this:
-```js
-{name: "David"}
+An object to pass parameters to raw SQL. If your query includes `@nombre`, your `parameters` object should look like:
+
+```javascript
+{ nombre: "David" }
 ```
 
-#### type
-Indicates the query type in methods that accept SQL text. They can be "select", "insert", "update", "delete", "any" or "create". By default it will be "any" and SqliteExpress will have to analyze the query type to give you an appropriate response, but if passed explicitly the code will be more robust.
+---
 
-# Class SqliteExpress and its Methods
-
-
+# Class SqliteExpress and its methods
 
 ## sqliteExpress.createDB
 
-The `sqliteExpress.createDB` method allows you to create a new SQLite database or connect to an existing one. Its parameters are: `route, logQuery` and returns a DB object.
+Creates a new SQLite database or connects to an existing one. Parameters: `route`, `logQuery`. Returns a **DB** object.
 
 ### Usage
 
-To create or connect to a database, use the following syntax:
-
 ```javascript
-const db = sqliteExpress.createDB({ route: './data.db', logQuery: false });
+const db = sqliteExpress.createDB({ route: './data.db' });
 ```
 
-In the example above, `createDB` is invoked with a route of "./data.db", which refers to a new SQLite database file called "data.db" in the directory relative to where the class was instantiated.
+In the example, `createDB` receives a path (ideally absolute).  
+If a database file already exists at that path, `createDB` will connect to it.
 
-If a database file with the same name already exists at the specified path, `createDB` will establish a connection to that existing database.
-
-It is important to note:
-- If the `route` is not provided, an error will be thrown.
+**Important:**
+- If `route` is not provided, an error will be thrown.
 
 ## sqliteExpress.createTable
 
-The `sqliteExpress.createTable` method is used to create a new table in a SQLite database, receives `db, table, columns, logQuery` and returns a Table object.
+Creates a new table. Takes `db, tableName, columns, logQuery`. Returns a **Table** object.
 
 ### Usage
-
-To create a table in the database, use the following syntax:
 
 ```javascript
 const table = await sqliteExpress.createTable({
-    db : db, //object created with createDB
-    table : "the_table", //string with the table name
-    columns : { name: "TEXT", age: "INTEGER", city: "TEXT" }
+  db: db, // object created with createDB
+  tableName: "la_tabla", // table name
+  columns: { nombre: "TEXT", edad: "INTEGER", ciudad: "TEXT" }
 });
-
 ```
-
-In the example above, createTable is called with the database object, the table name "the_table", and an object representing the column names and their data types. The column names and data types are defined within the object as key-value pairs. In this case, the table will have three columns: name of type text, age of type integer, and city of type text.
 
 ## sqliteExpress.insert
 
-The `sqliteExpress.insert` method is used to insert data into a specific table in a SQLite database. It receives `db, table, row, logQuery` and returns the ID of the inserted row if it is a number.
+Inserts data into a specific table. Takes `db, table, row, logQuery`. Returns the inserted row ID (if numeric).
 
 ### Usage
 
-To insert data into a table in the database, use the following syntax:
-
 ```javascript
-
 const id = await sqliteExpress.insert({
-    db : db,
-    table : table,
-    row : { name: "John", age: 27, city: "New York" }
+  db: db,
+  table: table,
+  row: { nombre: "Juan", edad: 27, ciudad: "Nueva York" }
 });
 ```
-In the example above, insert is called with the database object, the table and an object representing the column names and their corresponding values. The object consists of key-value pairs, where the keys represent the column names and the values represent the data to be inserted into those columns. In this case, the name column will have the value "John", the age column will have the value 27, and the city column will have the value "New York".
 
 ## sqliteExpress.update
 
-The `sqliteExpress.update` method is used to update records in a specific table in a SQLite database. It receives the parameters `db, table, update, where, connector, logQuery` and returns a number with the amount of affected rows.
+Updates records in a specific table. Takes `db, table, update, where, logQuery`. Returns the number of affected rows.
 
 ### Usage
-
-To update records in a table based on a specific condition, use the following syntax:
 
 ```javascript
 const changes = await sqliteExpress.update({
-    db : db,
-    table : table,
-    update : { name: "Alex" },
-    where : { age: 27 },
-    connector : "OR"
+  db: db,
+  table: table,
+  update: { nombre: "Alex" },
+  where: { edad: 27 }
 });
 ```
 
-In the example above, update is called with the database object, the table, an object representing the column and the new data {name: "Alex"}, and an object representing the condition {age: 27}. This means that the name column will be updated to "Alex" if the age column matches the value 27. For example, if there is a record with the name "John" and age 27, it will be updated to "Alex".
-
-An interesting feature this method has is that some value of some update column can be a function:
+You can also pass a function as the update value:
 
 ```javascript
 await sqliteExpress.update({
-    db : db,
-    table : table,
-    update : { age: (x) => (x + 1)},
-    where : { name: "Alex" },
-    connector : "OR"
+  db: db,
+  table: table,
+  update: { edad: (x) => x + 1 },
+  where: { nombre: "Alex" }
 });
 ```
-In this case it will select all rows whose "name" column contains "Alex", take the current value of that cell and add 1.
+
+In this case, rows with `nombre = "Alex"` will be selected; the current `edad` value will be taken and incremented by 1.
 
 ## sqliteExpress.delete
 
-The `sqliteExpress.delete` method is used to delete records from a specific table in a SQLite database based on a condition. It receives `db, table, where, connector, logQuery` and returns a number with the amount of deleted rows.
+Deletes records from a table based on a condition. Takes `db, table, where, logQuery`. Returns the number of deleted rows.
 
 ### Usage
-
-To delete rows from a table based on a specific condition, use the following syntax:
-
 
 ```javascript
 const changes = await sqliteExpress.delete({
-    db : db,
-    table : table,
-    where : {age: 27}
+  db: db,
+  table: table,
+  where: { edad: 27 }
 });
 ```
-
-In the example above, delete is called with the database object, the table and an object representing the condition {age: 27}. This means that all records in the table with an age column equal to 27 will be deleted.
 
 ## sqliteExpress.select
 
-The `sqliteExpress.select` method is used to retrieve data from a specific table in a SQLite database based on a condition. It receives the parameters `db, table, select, where, connector, expected, logQuery` and returns a representation of the data.
+Retrieves data from a table (with or without conditions). Takes `db, table, select, where, logQuery`. Returns a representation of the data.
 
 ### Usage
 
-To select data from a table based on a specific condition, use the following syntax:
+By default, it returns an **array of objects**:
 
 ```javascript
+const data = await sqliteExpress.select({
+  db: db,
+  table: table,
+  select: "*"
+});
+```
 
+You can also get other return types:
 
-const city = await sqliteExpress.select({
-    db: db,
-    table: table,
-    select: "city",
-    where: { name: "Alex" },
-    expected: "celd"
+```javascript
+const ciudad = await sqliteExpress.select.celd({
+  db: db,
+  table: table,
+  select: "ciudad",
+  where: { nombre: "Alex" }
 });
 
-console.log(city) //the cell value
-
+console.log(ciudad); // cell value
 ```
-Here expected becomes relevant: if you pass "celd" it will return only a scalar value, like a string or number for example. If you pass "row" it will return an object of scalar values like { [columnName]: [scalarValue] }, if you pass "column" it will return an array of scalar values representing all results from a single column and if you pass "rows" it will return an array of rows.
+
+Available options:
+- `select` → by default behaves like `select.rows`
+- `select.rows` → returns an array of objects
+- `select.row` → returns a single object
+- `select.column` → returns an array of scalar values
+- `select.celd` → returns a scalar value
 
 ## sqliteExpress.exist
 
-The `sqliteExpress.exist` method is used to know if there is a row in a table that meets a given condition. It receives `db, table, where, connector, logQuery` and returns a promise that resolves to a boolean.
+Checks whether at least one row matches a condition. Takes `db, table, where, logQuery`. Resolves to a **boolean**.
 
 ### Usage
 
-To verify if there is at least one row that meets the condition you can use the following syntax:
-
 ```javascript
-const verification = await sqliteExpress.exist({
-    db: db,
-    table: table,
-    where: {name: "Alex"}
+const exists = await sqliteExpress.exist({
+  db: db,
+  table: table,
+  where: { nombre: "Alex" }
 });
 ```
-
-If in the database table there is at least one row whose 'name' column has 'Alex' as a value, the code will return a promise that will resolve to true. If on the contrary there is no row that meets this condition, the returned promise will resolve to false.
 
 ## sqliteExpress.count
 
-The `sqliteExpress.count` method is used to know the number of rows that meet a condition. It receives `db, table, where, connector, logQuery` and returns a promise that resolves to a number.
+Counts how many rows match a condition. Takes `db, table, where, logQuery`. Resolves to a **number**.
 
 ### Usage
 
-To know the number of rows that meet a condition you can use the following syntax:
-
 ```javascript
-    const quantity = await sqliteExpress.count({
-    db: db,
-    table: table,
-    where: { name: "Alex" }
+const quantity = await sqliteExpress.count({
+  db: db,
+  table: table,
+  where: { nombre: "Alex" }
 });
 ```
 
-This code will check the table in the database and count the rows whose value in the 'name' column is 'Alex'. Then it will return a promise that will resolve to the number found.
-
 ## sqliteExpress.executeSQL
 
-This method allows direct use of SQL allowing the package to reach its maximum versatility.
-
-It receives the parameters `db, query, logQuery, expected, type, parameters` and returns a promise that can resolve differently according to the query type passed in type. Expected is used in the case of type="select".
-
-### Usage
+Runs **raw SQL** to maximize versatility.  
+Takes `db, query, logQuery, parameters`. Resolves to **sqlite3**’s `RunResult`. This method is **augmented with submethods** that change the return type:
 
 ```javascript
+const runResult = await sqliteExpress.executeSQL({
+  db: db,
+  query: "INSERT INTO users(name, age) VALUES(@name, @age)",
+  parameters: { name: "John", age: 28 }
+});
 
-    const result = await sqliteExpress.executeSQL({
-        db: db,
-        query: "SELECT * FROM my_table WHERE name = ?-John-?",
-        type: "select",
-        expected: "row"
-    })
-    console.log(result);
-```
-If I don't pass type, the code will detect what type of query it is by observing the first command which in this case is "SELECT". However, it's better to skip this inference step and pass it in type.
-
-Note the use of __?- -?__: these "keys" are used to replace typical placeholders.
-
-I have always found placeholders to be cumbersome, they add parameters to methods and it's not clear what you're trying to do at a glance.
-
-With this method the SQL statement is clearer. However, to resist SQL injection and increase security, my system uses traditional placeholders behind the scenes. Therefore, you must mark the parts of the statement that come from outside with __?- -?__.
-
-```javascript
-    const my_data = { name: "John" };
-
-    const result = await sqliteExpress.executeSQL({
-        db: db,
-        query: `SELECT * FROM my_table WHERE name = ?-${ my_data.name }-?`
-        type: "select",
-        expected: "row"
-    })
-    console.log(result);
+const selectCeldResult = await sqliteExpress.executeSQL.select.celd({
+  db: db,
+  query: "SELECT column FROM tabla WHERE id = @id",
+  parameters: { id: 1 }
+});
 ```
 
-Anyway, if you prefer not to use this way of adding external parameters, there is another more direct way and it is through the parameters argument:
-
-```javascript
-    const my_data = { name: "John" };
-
-    const result = await sqliteExpress.executeSQL({
-        db: db,
-        query: `SELECT * FROM my_table WHERE name = @name`,
-        type: "select",
-        expected: "row"
-        parameters: my_data
-    })
-    console.log(result);
-```
-
-Another important consideration is that given the SQLite3 architecture, you cannot mix SELECT queries with other queries at the first level.
-
-If you are going to do a select, you must do only one select and your statement must begin with SELECT.
-
-If you are not going to do any select at the first level, you can do whatever you want with the rest of the clauses. (If you do a select in a query that does not start with `SELECT`, there will be no error, but no rows will be returned).
+Options:
+- `sqliteExpress.executeSQL` → default variant equals `.justRun`
+- `sqliteExpress.executeSQL.justRun` → returns `sqlite3.RunResult`
+- `sqliteExpress.executeSQL.select` → default equals `.select.rows`
+- `sqliteExpress.executeSQL.select.rows` → array of objects
+- `sqliteExpress.executeSQL.select.row` → single object
+- `sqliteExpress.executeSQL.select.column` → array of scalars
+- `sqliteExpress.executeSQL.select.celd` → scalar value
+- `sqliteExpress.executeSQL.insert` → `number` (`lastRowId`)
+- `sqliteExpress.executeSQL.update` → `number` (`changes`)
+- `sqliteExpress.executeSQL.delete` → `number` (`changes`)
 
 ## sqliteExpress.declareSQL
 
-This method is similar to the previous one but has performance improvements and serves to have a more robust query architecture in some cases. It receives `db, query, logQuery, expected, type` and returns a reusable function that only receives parameters as an argument.
+Similar to `executeSQL`, but with **performance improvements** and a more robust architecture for certain scenarios. Takes `db, query, logQuery` and returns a **reusable function** that only takes `parameters`.
 
 ```javascript
-    const selectByNameFunc = await sqliteExpress.declareSQL({
-        db: db,
-        query: `SELECT * FROM my_table WHERE name = @name`,
-        type: "select",
-        expected: "row"
-    })
-    //and then:
+const selectByName = await sqliteExpress.declareSQL({
+  db: db,
+  query: "SELECT * FROM mi_tabla WHERE nombre = @nombre"
+});
 
-    const johnRow = await selectByNameFunc({ name: "John" });
+// Then:
+const johnRow = await selectByName.select.row({ nombre: "John" });
 ```
 
-In this case the placeholder system with __?--?__ format doesn't work, so it should only be used through parameters.
+The reusable function (`statement`) exposes the same variants as `executeSQL`, so you can choose the return type you need.
 
-## sqliteExpress.beginTransaction, sqliteExpress.commit and sqliteExpress.rollback
+The *statement* can be manually finalized with `statement.finalize()` before closing the database. This will render it unusable but will free up resources. If you do not finalize them, `db.close()` will do so.
 
-These are utility functions that receive no parameters and execute commands quickly.
+## sqliteExpress.begin, sqliteExpress.commit, and sqliteExpress.rollback
 
-```js
-await sqliteExpress.beginTransaction();
-try
-{
-    const result = await sqliteExpress.select();
-    await sqliteExpress.commit();
-    console.log(result);
-}
-catch(err)
-{
-    await sqliteExpress.rollback();
-    console.error(err);
+Utility functions with no required parameters (besides optional `logQuery`) that execute their SQL commands quickly.
+
+```javascript
+await sqliteExpress.begin();
+try {
+  const result = await sqliteExpress.select({ db, table, select: "*" });
+  await sqliteExpress.commit();
+  console.log(result);
+} catch (err) {
+  await sqliteExpress.rollback();
+  console.error(err);
 }
 ```
-Behind the scenes they only execute their respective SQL commands.
+
+Under the hood they simply execute their respective SQL commands.
+
+`begin` also provides submethods:
+- `begin.transaction`
+- `begin.inmediateTransaction`  // submethod name as in the library
+- `begin.exclusiveTransaction`
+
+Each one maps to its corresponding SQL mode.
+
+---
 
 # Class DB and its methods
 
-The DB class represents database objects. The sqliteExpress.createDB method returns a DB instance that, as we already saw, you can use as an argument in sqliteExpress methods. However, DB has its own methods. All sqliteExpress methods are in DB (except createDB). In this case, the methods are the same but they don't receive a db argument, they simply use their own instance as an argument.
+The **DB** class represents database objects. The `sqliteExpress.createDB` method returns a **DB** instance which, as shown, you can pass to **SqliteExpress** methods. However, **DB** also exposes its **own** methods. All **SqliteExpress** methods exist on **DB** (except `createDB`). In this case, the methods are the same but **do not** take a `db` argument: they use the instance itself.
 
-```js
+```javascript
 const SqliteExpress = require("sqlite-express");
 const sqliteExpress = new SqliteExpress();
 const db = sqliteExpress.createDB({ route: "./data.db" });
 
-await db.createTable(/*bla bla bla*/);
+await db.createTable(/* ... */);
 ```
 
-## db.createTransaction
+## db.createScope
 
-The db instance also has a very powerful method called db.createTransaction that creates a transaction instance.
+The **db** instance also provides a powerful method, `db.createScope`, which creates a **Scope** instance:
 
-```js
-const transaction = db.createTransaction();
+```javascript
+const scope = db.createScope();
 ```
 
-This shares all the methods of the db, and also doesn't need a db parameter in its methods. But it has two extra methods: `start` and `end`.
+A scope, as soon as it’s created, is added to an **operation queue**. This queue waits for all methods called **with that scope** to finish before starting the next one. Example:
 
-```js
-const SqliteExpress = require("sqlite-express");
-const sqliteExpress = new SqliteExpress();
-const db = sqliteExpress.createDB({ route: "./data.db" });
+```javascript
+const scope = db.createScope();
 
-const transactionFunc = () =>
-{
-    const transaction = db.createTransaction();
-    transaction.start();
-    await transaction.beginTransaction();
-    try
-    {
-        const result = await transaction.select();
-        await transaction.commit();
-        console.log(result);
-    }
-    catch(err)
-    {
-        await transaction.rollback();
-        console.error(err);
-    }
-    finally
-    {
-        transaction.end();
-    }
-}
+db.insert({ table: table, row: { name: "John", age: 28 } });
+
+const table = db.createTable({
+  tableName: "users",
+  columns: { name: "TEXT", age: "INTEGER" },
+  scope: scope
+});
+
+scope.close();
 ```
-After executing transaction.start(), the system will wait for all running transactions to finish before starting yours. Then it will execute the methods that use transaction blocking all calls from other transactions made asynchronously, guaranteeing total isolation. When you call transaction.end(), the transaction is discarded and the list of next transactions continues running. (Therefore it is very important to call transaction.end() or you will block all subsequent calls).
 
-This is not always necessary, but in particular occasions it can be very useful. It is not very compatible with the declareSQL method since the nature of the transaction is ephemeral and designed not to persist.
+In this example, after creating the scope there’s a `db.insert`. Without a scope, it would execute immediately; but since a scope is active, it **won’t** run until that scope completes. Then we create a table **within the scope**, so it will start. Finally we call `scope.close()`, which closes the scope; you can’t pass that scope to any other method afterward. Once closed and when all operations within it end, the scope is removed from the queue, letting the next pending operations proceed (in this case, the waiting `insert`).
+
+If you don’t pass any scope, the method will use a **community scope** that manages methods without a scope.
+
+**IMPORTANT**  
+Scopes are very useful for guaranteeing **execution order** without interference from other calls on the same connection, but you must avoid **blocking** the queue. In the previous example, if you put `await` on the `insert`:
+
+```javascript
+const scope = db.createScope();
+
+await db.insert({ table: table, row: { name: "John", age: 28 } });
+
+const table = db.createTable({
+  tableName: "users",
+  columns: { name: "TEXT", age: "INTEGER" },
+  scope: scope
+});
+
+scope.close();
+```
+
+The queue will deadlock: `db.insert` is waiting for the scope to finish before continuing to the next line, but that won’t happen if `scope.close()` is below.
+
+Another important point is to **always close the scope**; otherwise you’ll block other scopes waiting their turn. The recommendation is to create one for a **specific** transaction (e.g., in a REST API endpoint), then close it. If you **don’t** need serialization, **avoid** using scopes. Use them when you don’t want another `COMMIT` or `ROLLBACK` to break your serialized sequence of operations.
+
+## db.getTable
+
+Creates a **Table** instance **without** relying on `db.createTable`. This method **assumes** you already created the table (via the method or raw SQL). If not, your queries will fail. It’s useful when you have an initialization routine that guarantees tables exist; since it’s **synchronous**, you can fetch the table by its `tableName` right away.
+
+Method that closes the **connection**. It’s a best practice for performance and security reasons. Note that once you call `close()`, you can no longer use this **db** instance or any **statements** created via `declareSQL` that are associated with this connection.
+---
 
 # Class Table and its methods
 
-The createTable methods of SqliteExpress or DB return a Table instance. This object, in addition to serving as a table parameter in the methods of other classes, has simple methods: `select, insert, update, delete, exist and count` and by default already incorporate the table argument.
+The `createTable` methods on **SqliteExpress** or **DB** return a **Table** instance. Besides being usable as the `table` parameter in other class methods, it includes the convenience methods: `select`, `insert`, `update`, `delete`, `exist`, and `count`, which implicitly set the `table` argument.
 
-```js
+```javascript
 const SqliteExpress = require("sqlite-express");
 const sqliteExpress = new SqliteExpress();
 const db = sqliteExpress.createDB({ route: "./data.db" });
 
-const table = await db.createTable(/*bla bla bla*/);
+const table = await db.createTable({ tableName: "users", columns: { name: "TEXT", age: "INTEGER" } });
 
-await table.select(/*bla bla bla*/);
+await table.select({ select: "*" });
 ```
+
+---
 
 ## Recommendations
 
-- **Avoid Referencing the Same Database from Different Instances**: 
-    It is not advisable to reference the same database from two different `SqliteExpress` instances.
+- **Avoid referencing the same database from different instances**  
+  It’s not advisable to reference the same DB file from two different **SqliteExpress** instances.
 
-    ```javascript
-    const instance1 = new SqliteExpress();
-    const instance2 = new SqliteExpress();
+  ```javascript
+  const instancia1 = new SqliteExpress();
+  const instancia2 = new SqliteExpress();
 
-    instance1.createDB({route : '.the_same_path/the_same_DB.db'});
-    instance2.createDB({route : '.the_same_path/the_same_DB.db'});
-    ```
+  instancia1.createDB({ route: './la_misma_ruta/la_misma_BD.db' });
+  instancia2.createDB({ route: './la_misma_ruta/la_misma_BD.db' });
+  ```
 
-    The class is designed to handle the waiting list of a database in order. However, with two instances pointing to the same file, there could be an asynchrony conflict, negating the package's benefits.
+  The class is designed to manage a **wait queue** in **order** for a database. With two instances pointing to the same file, you may encounter **asynchrony conflicts**, negating the package’s benefits.
 
-## Version 5
+  There are design patterns where you might intentionally open another connection and use `BEGIN` / `COMMIT` to manage transactions. For **medium-sized** projects, it’s generally not recommended.
 
-From version 5 onwards, old select options are abandoned: `processRows, processColumns and emptyResult`. This was used to format select responses but it was a more unstable system; now with expected and its different options a more robust handling of select responses is achieved.
-
-Previously databases were referenced with a string type key. Now key is no longer an option and the db object is used directly.
-
-Join was an option to create join statements in previous versions. Given the nature of a join and its multiple layers of semantic difficulty, I decided to remove the option. It only added complexity very difficult to represent in JavaScript object format. Now, to obtain that behavior it is recommended to use executeSQL or declareSQL.
+---
 
 # License
-This software is licensed under the ISC License. The ISC License is a permissive free software license, allowing freedom to use, modify, and redistribute the software, with some conditions. For the complete terms and conditions, please see the LICENSE file in the root directory of this project.
+
+This software is licensed under the **ISC License**. It is a **permissive** free software license that allows use, modification, and redistribution with some conditions. For the full terms, see the **LICENSE** file at the project root.

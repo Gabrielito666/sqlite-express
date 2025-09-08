@@ -1,8 +1,3 @@
-import Table from "../class/table";
-import DB from "../class/db";
-import { Scope } from "../class/scopes-queue";
-import SqliteExpress from "../class/sqlite-express";
-
 export { DB } from "../class/db/types";
 export { Scope } from "../class/scopes-queue/types";
 export { Table } from "../class/table/types";
@@ -20,6 +15,11 @@ export { InsertFunction } from "../functions/insert";
 export { RollbackFunction } from "../functions/rollback";
 export { SelectFunction } from "../functions/select";
 export { UpdateFunction } from "../functions/update";
+
+import { Table } from "../class/table/types";
+import { DB } from "../class/db/types";
+import { Scope } from "../class/scopes-queue/types";
+import { SqliteExpress } from "../class/sqlite-express/types";
 
 // SELECT RETURNS
 

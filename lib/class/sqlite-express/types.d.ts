@@ -1,6 +1,5 @@
-import { DB } from "../db/types";
-import { RouteArg, LogQueryArg, DBArg } from "lib/types";
-
+import { DB, DBClass } from "../db/types";
+import { RouteArg, LogQueryArg, DBArg } from "../../types/index";
 
 export interface SqliteExpress
 {
@@ -51,5 +50,6 @@ export interface SqliteExpress
 
 export interface SqliteExpressClass
 {
-    new(args?: LogQueryArg): SqliteExpressType;
+    DB:DBClass;
+    new(args?: LogQueryArg): SqliteExpress;
 }

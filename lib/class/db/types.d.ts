@@ -69,6 +69,7 @@ export interface DBPrivate
     rollbackStamentPromise:Promise<Statement>,
     commitStamentPromise:Promise<Statement>,
     tablesMap:Map<string, Table>,
+    stmtPromisesList: ReturnType<DeclareSQLFunction>[];
 }
 
 export interface DBClass
