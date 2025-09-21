@@ -92,7 +92,6 @@ type SQLType =
 export type Parameters = {[key: string]: CeldValue}|CeldValue[];
 export type Route = string;
 export type TableName = string;
-export type Where = WhereParam;
 export type Columns = { [key: string]: SQLType };
 export type Select = string|string[]|{[key:string]: { as:string }};
 export type Update = {[key: string]: (any|((value:any) => any))};

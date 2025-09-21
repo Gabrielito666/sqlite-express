@@ -7,11 +7,11 @@ export interface Table
     db: DB;
     select:
     {
-        (args: Omit<Parameters<DB["select"]>[0], "table">): ReturnType<DB["select"]>;
-        rows(args: Omit<Parameters<DB["select"]["rows"]>[0], "table">): ReturnType<DB["select"]["rows"]>;
-        row(args: Omit<Parameters<DB["select"]["row"]>[0], "table">): ReturnType<DB["select"]["row"]>;
-        celd(args: Omit<Parameters<DB["select"]["celd"]>[0], "table">): ReturnType<DB["select"]["celd"]>;
-        column(args: Omit<Parameters<DB["select"]["column"]>[0], "table">): ReturnType<DB["select"]["column"]>;
+        (args?: Omit<Parameters<DB["select"]>[0], "table">): ReturnType<DB["select"]>;
+        rows(args?: Omit<Parameters<DB["select"]["rows"]>[0], "table">): ReturnType<DB["select"]["rows"]>;
+        row(args?: Omit<Parameters<DB["select"]["row"]>[0], "table">): ReturnType<DB["select"]["row"]>;
+        celd(args?: Omit<Parameters<DB["select"]["celd"]>[0], "table">): ReturnType<DB["select"]["celd"]>;
+        column(args?: Omit<Parameters<DB["select"]["column"]>[0], "table">): ReturnType<DB["select"]["column"]>;
     }
     insert(args: Omit<Parameters<DB["insert"]>[0], "table">): ReturnType<DB["insert"]>;
     update(args: Omit<Parameters<DB["update"]>[0], "table">): ReturnType<DB["update"]>;
