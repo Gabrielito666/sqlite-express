@@ -1,5 +1,5 @@
 import { TableName } from "../../types";
-import { DB } from "../../types";
+import { DB } from "../db/types";
 
 export interface Table
 {

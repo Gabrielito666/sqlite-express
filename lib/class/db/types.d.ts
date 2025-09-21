@@ -1,15 +1,23 @@
 import {
     ColumnsArg, ConnectorArg, LogQueryArg, ParametersArg, QueryArg, RowArg, ScopeArg,
     SelectArg, TableArg, TableNameArg, WhereArg, RouteArg, UpdateArg,
-
-    BeginFunction, CommitFunction, CountFunction, CreateTableFunction, DeclareSQLFunction,
-    DeleteFunction, ExecuteSQLFunction, ExistFunction, InsertFunction, RollbackFunction,
-    SelectFunction, UpdateFunction,
-
-    Table,
 } from "../../types";
+
+import { BeginFunction } from "../../functions/begin/types";
+import { CommitFunction } from "../../functions/commit/types";
+import { CountFunction } from "../../functions/count/types";
+import { CreateTableFunction } from "../../functions/create-table/types";
+import { DeclareSQLFunction } from "../../functions/declare-sql/types";
+import { DeleteFunction } from "../../functions/delete/types";
+import { ExecuteSQLFunction } from "../../functions/execute-sql/types";
+import { ExistFunction } from "../../functions/exist/types";
+import { InsertFunction } from "../../functions/insert/types";
+import { RollbackFunction } from "../../functions/rollback/types";
+import { SelectFunction } from "../../functions/select/types";
+import { UpdateFunction } from "../../functions/update/types";
 import { ScopesQueue, Scope } from "../scopes-queue/types";
 import { Database } from "sqlite3";
+import { Table } from "../table/types";
 export interface DB
 {
     logQuery: boolean;
